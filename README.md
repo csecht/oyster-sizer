@@ -15,13 +15,13 @@
 
 ### Overview:
 
-The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyster images from various stages of aquaculture. Through a tkinter GUI, users can detect and classify oysters and a size standard, input the standard's size, and receive reports on oyster sizes, mean, median, and range along with a size-annotated image. Size standards need to be flat disk-like objects of known diameter. The program utilizes a YOLOv8n object detection model pretrained on the COCO dataset and fine-tuned on oyster and size standard images. Text and image results can be saved to file.
+The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyster images from various stages of aquaculture. Through a tkinter GUI, users can detect and classify oysters and a size standard, input the standard's size, and receive reports on oyster sizes, mean, median, and range along with a size-annotated image. Size standards need to be flat disk-like objects of known diameter. The program utilizes a YOLO11n object detection model, pretrained with COCO data, and trained with custom data for oyster and size standard images. Text and annotated image results can be saved to file.
 
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
 
 ### Usage:
 
-From within the downloaded repository folder, recommended command line invocation is : `python3 -m oystersize` (or `py -m oystersize` on Windows). This will open the GUI window for selecting an image file for analysis. Currently supported image file formats are JPEG and PNG.
+From within the downloaded repository folder, the recommended command line invocation is : `python3 -m oystersize` (or `py -m oystersize` on Windows). This will open the GUI window for selecting an image file for analysis. Currently supported image file formats are JPEG and PNG.
 
 To view basic information, author, version, license, etc.: `python3 -m oystersize --about`
 
