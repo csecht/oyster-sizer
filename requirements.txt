@@ -1,8 +1,9 @@
-opencv-python~=4.10.0.84
-numpy~=2.1.2
-torch~=2.4.1
+opencv-python
+numpy
+torch
 torchvision
-ultralytics~=8.3.23
-
-pillow~=10.4.0
-packaging~=24.1
+ultralytics
+#ultralytics~=8.3.23
+#torch==2.4.1
+pillow
+packaging
