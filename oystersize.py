@@ -116,7 +116,7 @@ class ProcessImage(tk.Tk):
         source = self.cvimg['input'].copy()
 
         # Initialize model
-        model_to_use = f"models/{const.MODEL_NAME}/weights/best.pt"
+        model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.pt")
         model = YOLO(model_to_use)
 
         available_device = ('mps' if MY_OS == 'dar' and mps.is_available()
@@ -1792,9 +1792,8 @@ def main() -> None:
     where needed.
     """
 
-    # Check system, versions, and command line arguments. Exit if any
-    #  critical check fails or if the argument --about is used.
-    # Comment out run_checks() when running PyInstaller.
+    # Check system, versions, and command line arguments.
+    # Exit if any critical check fails or if the --about argument is used.
     run_checks()
 
     # Instantiating SetupApp() initializes the mainloop window through
@@ -1809,8 +1808,9 @@ def main() -> None:
     #  without the delay of waiting for tk event actions.
     # Source: https://stackoverflow.com/questions/39840815/
     #   exiting-a-tkinter-app-with-ctrl-c-and-catching-sigint
-    signal(signalnum=SIGINT, handler=lambda x, y: app.destroy())
     # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
+    # Can comment out next three lines when using PyInstaller.
+    signal(signalnum=SIGINT, handler=lambda x, y: app.destroy())
     tk_check = lambda: app.after(500, tk_check)
     app.after(500, tk_check)
 
