@@ -1776,7 +1776,7 @@ def run_checks() -> None:
             None
     """
     utils.check_platform()
-    vcheck.minversion('3.7')
+    vcheck.minversion('3.9')
     vcheck.maxversion('3.11')
     manage.arguments()
 
