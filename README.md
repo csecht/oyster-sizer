@@ -4,8 +4,8 @@
 
 ## Table of Contents
 * [Overview](#Overview)
-* [Usage](#Usage)
 * [Requirements](#Requirements)
+* [Usage](#Usage)
 * [Screenshots](#Screenshots)
 * [Sizing with lens distortion](#Sizing-with-lens-distortion)
 * [Tips](#Tips)
@@ -18,6 +18,31 @@
 The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyster images from various stages of aquaculture. Through a tkinter GUI, users can detect and classify oysters and a size standard, input the standard's size, and receive reports on oyster sizes, mean, median, and range along with a size-annotated image. Size standards need to be flat disk-like objects of known diameter. The program utilizes a YOLO11n object detection model, pretrained with COCO data, and trained with custom data for oyster and size standard images. Text and annotated image results can be saved to file.
 
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
+
+### Requirements:
+Python 3.9 or later, plus the packages OpenCV-Python, NumPy, torch, and ultralytics. Tkinter (Tk/Tcl) is also required, but is most likely already included in your Python installation. Program development environments were Linux Ubuntu 22.04 (Python 3.10), Windows 11 (Python 3.11), and macOS 13.2 (Python 3.9). 
+
+As with all repository downloads, it is best practice to install required packages in a Python virtual environment to avoid undesired changes in your system's Python library. The recommended way to set up a clean environment that has all packages and dependencies needed to run `oystersize.py` is to initially run these commands:
+
+Build a venv directory in the current folder (use whatever venv name you like):
+
+    `python3 -m venv oystersize_venv`
+
+Activate the virtual environment:
+
+    `source oystersize_venv/bin/activate` (Linux and macOS)
+    `oystersize_venv\Scripts\activate` (Windows)
+
+Install the required packages (need latest versions of pip and ultralytics):
+
+    `python3 -m pip install --update pip` 
+    `python3 -m pip install ultralytics`
+
+Installing the ultralytics package installs all required packages: numpy, opencv-python, torch, torchvision, Pillow, and NVIDIA tools to use a CUDA compatible GPU. If you don't have a CUDA GPU, the program will still run fine. If you already have the required packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics (the YOLO package). Building a virtual environment from scratch guarantees compatibility. 
+
+Now, whenever you want to run the program, activate this virtual environment, change directory to your downloaded repository directory, and run the program as described below in Usage.
+
+To deactivate a virtual environment, use the command `deactivate`.
 
 ### Usage:
 
@@ -47,29 +72,15 @@ If a particular oyster is not detected at any confidence level, it may be becaus
 
 Some non-oyster shells or similar objects may be detected as oysters. The model was trained to distinguish oysters from sizing disks, not from other shell-like objects.
 
-### Requirements:
-Python 3.7 or later, plus the packages OpenCV-Python, NumPy, torch, ultralytics, and tkinter (Tk/Tcl). Development environment was Linux Ubuntu 20.04 (Python 3.10), Windows 11 (Python 3.11), and macOS 13.2 (Python 3.9). 
-
-For quick installation of the required Python PIP packages:
-from the downloaded GitHub repository folder, run this command
-
-    pip install -r requirements.txt
-
-Alternative commands (system dependent):
-
-    python3 -m pip install -r requirements.txt (Linux and macOS)
-    py -m pip install -r requirements.txt (Windows)
-    python -m pip install -r requirements.txt (Windows)
-
-As with all repository downloads, it is good practice to install the required packages in a Python virtual environment to avoid undesired changes in your system's Python library.
-
 ### Screenshots:
 ![oysters with size annotations](images/sized_objects_screenshot.png)
 ![settings window](images/settings_screenshot.png)
 
-Farmed oysters sampled from a population ready for market, using sample image `images/examples/sample3.jpg`. The size standards were a hockey puck (painted, center) and two plastic cut-outs. The "Sized Objects" window shows labeled bounding boxes of detected oysters and size standards (red boxed), with inset summary metrics (top left). The black and white plastic cut-out standards had a diameter of 76.9 mm, which was entered as the known size. The "oystersize Report & Settings" window shows the full report. Initially, the default Confidence level of 75% detected 98 of 105 oysters, with an estimated average of 62.0 mm, but generated a 'false positives detected' warning. Increasing the Confidence level to 83%, as shown, excluded false positive detection of the center not-well-contrasted standard, thereby detecting 81 oysters with an estimated average of 62.6 mm. By comparison, measuring all 105 oysters with a digital caliper provided a sample average of 62.9 mm.
+Farmed oysters sampled from a population ready for market, using sample image `images/examples/sample3.jpg`. The size standards were a hockey puck (painted, center) and two plastic cut-outs. The "Sized Objects" window shows labeled bounding boxes of detected oysters and size standards (red boxed), with inset summary metrics (top left). The black and white plastic cut-out standards had a diameter of 76.9 mm, which was entered as the known diameter. The "oystersize Report & Settings" window shows the full report. The default Confidence level of 75% will detect 98 of 105 oysters, with an estimated average of 62.0 mm, but also gives a 'false positives detected' warning. Increasing the Confidence level to 83%, as shown, excluded false positive detection of the center not-well-contrasted standard, and so detected 81 oysters with an estimated average of 62.6 mm. By comparison, measuring all 105 oysters with a digital caliper provided an actual sample average of 62.9 mm. Not bad! 
 
-Sample size means and medians are estimated based on an auto-generated correction factor, which is displayed in the report window. Individual oyster size annotations and their size ranges are not corrected. See [Known Issues](#Known-Issues) for more information.
+You should expect that the program's size estimates are within 5% of actual sample sizes. This may vary depending on the quality of the image, the size standard used, and the number of oysters detected.
+
+Sample size means and medians are estimated based on an auto-generated correction factor, which is displayed in the report window. Size annotations of individual oyster and their reported ranges are not corrected. See [Known Issues](#Known-Issues) for more information.
 
 ### Sizing with lens distortion:
 There are three ways to deal with lens distortion to obtain the best size estimates. For example, an iPhone 11 using the wide-angle (normal) lens at a zoom of 1x, with the sample stage at a 20-inch distance and the size standard placed at the center, there is ~2% increase in the population mean size because objects farther from the center cover slightly more pixel area than their actual size. With the ultra-wide lens (e.g. zoom of 0.7x), the sizing error is about 3% to 4%. If the ultra-wide lens, any sizing errors could be minimized by using your camera's built-it lens correction option. iPhones 12 and later have a camera "Setting for Lens Correction", as does the Samsung Galaxy S series.
