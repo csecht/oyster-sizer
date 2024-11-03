@@ -115,7 +115,7 @@ All photo images are from the author, C.S. Echt.
 
 ### Example size standards.
 Enter the millimeter diameter value in the Size standard entry field. The standard's size is then used to convert pixels to millimeters for all objects in the image. Sizes are reported using appropriate significant figures, as limited by the entered standard's significant figures or the pixel size of the standard, whichever is less. 
-The size standard is excluded from the reported oyster size metrics. The standard's size and bounding box are displayed in the annotated image in red font. Any solid disk of a known diameter, using whatever measuring units you like, can be used.
+The size standard is excluded from the reported oyster size metrics. Any solid disk of a known diameter, using whatever measuring units you like, can be used.
 The closer the standard's diameter is to the oysters being sized, the more accurate the size metrics will be.
 
 | Disk        | mm dia. | Notes                | s.f. |

@@ -129,6 +129,8 @@ COLORS_CV = {
     'white': (255, 255, 255),
     'red': (0, 0, 255),
     'green': (0, 255, 0),
+    'DarkOrchid1': (255, 62, 191),
+    'gold1': (0, 215, 255),
 }
 
 # Set 'tk_white' based on the operating system's default white.
@@ -149,8 +151,8 @@ COLORS_TK = {
     'black': 'black',
     'white': 'white',
     'tk_white': {'dar': 'white', 'lin': 'grey85'}.get(MY_OS, 'grey95'),
-    'red': 'red1',  # not color-blind compatible
-    'green': 'green1',  # not color-blind compatible
+    'red': 'red1',  # not color-blind compatible for good contrast
+    'green': 'green1',  # not color-blind compatible for good contrast
 }
 
 # https://vovkos.github.io/doxyrest-showcase/opencv/sphinx_rtd_theme/enum_cv_HersheyFonts.html

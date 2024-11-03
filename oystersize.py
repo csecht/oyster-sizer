@@ -616,8 +616,9 @@ class ViewImage(ProcessImage):
 
         color_selection: tuple = const.COLORS_CV.get(self.color_val.get(), 'green')
         if object_name == 'standard':
-            color_selection = const.COLORS_CV['red']
-        # Use 'O' for oyster size annotation instead of the object size.
+            color_selection = const.COLORS_CV['DarkOrchid1']
+
+        # Use letter 'O' for oyster annotation instead of its measured size.
         # if object_name == 'oyster':
         #     object_size = 'O'
 
@@ -875,14 +876,14 @@ class ViewImage(ProcessImage):
                 "vermilion")),
             (self.first_run, (
                 f'\nInitial processing time elapsed: {self.elapsed}\n'
-                'Identified size standard have a red box.\n'
-                'Adjust Confidence level if any oysters have a red box.\n',
+                'Identified size standard have a purple box.\n'
+                'Adjust Confidence level if any oysters have a purple box.\n',
                 "black")),
             (not self.first_run, (
                 '\nObject detections completed.\n'
                 f'{self.elapsed} processing seconds elapsed.\n'
-                'Identified size standard have a red box.\n'
-                'Adjust Confidence level if any oysters have a red box.\n',
+                'Identified size standard have a purple box.\n'
+                'Adjust Confidence level if any oysters have a purple box.\n',
                 "blue")),
         )
         for condition, message in processing_messages:
@@ -1298,7 +1299,8 @@ class SetupApp(ViewImage):
         tip_text = (
             '• Images are auto-zoomed to fit the screen at startup.',
             f'     Zoom can be changed with {zoom_tip}',
-            f'• Font and line color can be changed with {color_tip}.',
+            f'• Box color can be changed with {color_tip}, except',
+            "      standard's box is always purple.",
             '• Font size can be changed with Ctrl-+(plus) & -(minus).',
             '• Boldness can be changed with Shift-Ctrl-+(plus) & -(minus).',
             '• Ctrl-U updates the sized image window for a new image.',
@@ -1678,7 +1680,7 @@ class SetupApp(ViewImage):
         Returns: None
         """
 
-        self.color_val.set('yellow')
+        self.color_val.set('gold1')
         self.entry['size_std_val'].set('1')
         self.confidence_slide_val.set(75)
 
