@@ -30,8 +30,6 @@ from sys import exit as sys_exit
 from time import time
 from typing import Union, List, Tuple, Any
 
-from utility_modules.constants import MY_OS
-
 # Third party imports.
 # tkinter(Tk/Tcl) is included with most Python3 distributions,
 # but may sometimes need to be regarded as third-party.
@@ -75,6 +73,7 @@ from utility_modules import (vcheck,
                              constants as const,
                              to_precision as to_p)
 
+MY_OS = const.MY_OS
 PROGRAM_NAME = utils.program_name()
 
 
@@ -111,23 +110,21 @@ class ProcessImage(tk.Tk):
         YOLO prediction for oyster input image, with size standard object.
         """
 
-        # self.cvimg['input'] defined in open_input() from self.input_file_path
-        #  via cv2.imread() of filedialog.askopenfilename().
-        source = self.cvimg['input'].copy()
-
         # Initialize model
         model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.pt")
         model = YOLO(model_to_use)
 
+        # Run inference, on CPU if no GPU available.
         available_device = ('mps' if MY_OS == 'dar' and mps.is_available()
                             else device('cuda' if cuda.is_available() else 'cpu')
                             )
 
         confidence: float = self.confidence_slide_val.get() / 100
 
-        # Run inference, on CPU if no GPU available.
+        # self.cvimg['input'] defined in open_input() from self.input_file_path
+        #  via cv2.imread() of filedialog.askopenfilename().
         results = model.predict(
-            source=source,
+            source=self.cvimg['input'].copy(),
             imgsz=const.PREDICT_IMGSZ,
             conf=confidence,
             device=available_device,
@@ -190,7 +187,6 @@ class ViewImage(ProcessImage):
             'update_pred': ttk.Button(master=self),
             'save_results': ttk.Button(master=self),
             'new_input': ttk.Button(master=self),
-            # 'reset': ttk.Button(master=self),
         }
 
         self.slider = {
@@ -320,8 +316,8 @@ class ViewImage(ProcessImage):
             self.config(cursor='')
             self.slider_val_saved = ''
 
-        # Use update(), not update_idletasks, here to improve promptness
-        #  of windows' response.
+        # Use update(), not update_idletasks, here to speed up windows'
+        #  response.
         self.update()
 
     def update_image(self, name: str) -> None:
@@ -368,7 +364,7 @@ class ViewImage(ProcessImage):
         x1, y1, x2, y2 = xywh2xyxy(xywh_bbox)
 
         # Set limits for coordinate points to identify boxes that
-        # are within 3 px of an image file border (edge).
+        # are within a few pixels of an image file border (edge).
         return not (x1 <= const.EDGE_PROXIMITY
                     or y1 <= const.EDGE_PROXIMITY
                     or x2 >= self.input_w - const.EDGE_PROXIMITY
@@ -390,11 +386,11 @@ class ViewImage(ProcessImage):
         oyster_objects: np.ndarray = self.predicted_boxes[self.predicted_class_distribution == 1]
 
         self.interior_standards = (
-            std_objects[np.apply_along_axis(self.is_interior, axis=1, arr=std_objects)]
+            std_objects[np.apply_along_axis(func1d=self.is_interior, axis=1, arr=std_objects)]
             if std_objects.size else np.array([])
         )
         self.interior_oysters = (
-            oyster_objects[np.apply_along_axis(self.is_interior, axis=1, arr=oyster_objects)]
+            oyster_objects[np.apply_along_axis(func1d=self.is_interior, axis=1, arr=oyster_objects)]
             if oyster_objects.size else np.array([])
         )
 
@@ -430,10 +426,6 @@ class ViewImage(ProcessImage):
         are_not_close_to_oysters = np.array(
             [not utils.box_is_very_close_inarray(box, self.interior_oysters)
              for box in self.interior_standards]
-        )
-        are_not_close_to_each_other = np.array(
-            [not utils.box_is_very_close_inarray(box, self.interior_oysters)
-             for box in self.interior_oysters]
         )
         self.true_pos_standards = (
             self.interior_standards[are_not_close_to_oysters]
@@ -1224,15 +1216,15 @@ class SetupApp(ViewImage):
         # Accelerators use key binds from bind_functions() and
         #   bind_functions() and must be platform-specific.
         # Unicode arrow symbols: left \u2190, right \u2192, up \u2101, down \u2193
-        os_accelerator = 'Command' if const.MY_OS == 'dar' else 'Ctrl'
-        zoom_accelerator = 'Command-Shift' if const.MY_OS == 'dar' else 'Ctrl'
+        os_accelerator = 'Command' if MY_OS == 'dar' else 'Ctrl'
+        zoom_accelerator = 'Command-Shift' if MY_OS == 'dar' else 'Ctrl'
         color_tip = ('shift-control-↑ & shift-control-↓'
-                     if const.MY_OS == 'dar'
+                     if MY_OS == 'dar'
                      else 'Ctrl-↑ & Ctrl-↓')
         zoom_tip = ('with shift-control-← & shift-control-→.'
-                    if const.MY_OS == 'dar'
+                    if MY_OS == 'dar'
                     else 'with Ctrl-← & Ctrl-→.')
-        plus_key, minus_key = ('+', '-') if const.MY_OS == 'dar' else ('(plus)', '(minus)')
+        plus_key, minus_key = ('+', '-') if MY_OS == 'dar' else ('(plus)', '(minus)')
 
         menu_params = dict(
             tearoff=0,
@@ -1292,7 +1284,6 @@ class SetupApp(ViewImage):
                                  command=self.display_metrics_in_image,
                                  accelerator=f'{zoom_accelerator}+I')
 
-
         tips = tk.Menu(**menu_params)
         menu['Help'].add_cascade(label='Tips...', menu=tips)
         # Bullet symbol from https://coolsymbol.com/, unicode_escape: u'\u2022'
@@ -1332,7 +1323,7 @@ class SetupApp(ViewImage):
         utils.set_icon(self)
         self.setup_main_window()
         self.setup_main_menu()
-        self.open_input(parent=self.master if const.MY_OS == 'dar' else self)
+        self.open_input(parent=self.master if MY_OS == 'dar' else self)
         self.set_auto_scale_factor()
         self.setup_image_windows()
         self.configure_main_window()
@@ -1617,7 +1608,7 @@ class SetupApp(ViewImage):
         # Because we are retaining the macOS default menu bar, the menu
         #  headings are not greyed out when the main window loses focus,
         #  and remain active when any window has focus.
-        if const.MY_OS == 'dar':
+        if MY_OS == 'dar':
             self.bind_all('<FocusIn>', _got_focus)
             self.bind_all('<FocusOut>', _lost_focus)
         else:
@@ -1662,7 +1653,7 @@ class SetupApp(ViewImage):
             self.bind_all(event, lambda _, f=function: f())
 
         # Need additional platform-specific keypad keysyms.
-        if const.MY_OS == 'win':
+        if MY_OS == 'win':
             self.bind_all('<Control-plus>',
                           lambda _: self.call_cmd().increase_font_size())
             self.bind_all('<Shift-Control-minus>',
