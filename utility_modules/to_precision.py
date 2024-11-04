@@ -162,26 +162,20 @@ def to_precision(value,
 
     is_neg, sig_digits, dot_power, ten_power = _sci_decompose(value, precision)
 
-    if notation == 'auto':
-        if abs(ten_power) < auto_limit:
-            converter = _std_notation
-        else:
-            converter = _sci_notation
+    converter = {
+        'auto': _std_notation if abs(ten_power) < auto_limit else _sci_notation,
+        'sci': _sci_notation,
+        'scientific': _sci_notation,
+        'eng': _eng_notation,
+        'engineering': _eng_notation,
+        'std': _std_notation,
+        'standard': _std_notation
+    }.get(notation)
 
-    elif notation in ('sci', 'scientific'):
-        converter = _sci_notation
-
-    elif notation in ('eng', 'engineering'):
-        converter = _eng_notation
-
-    elif notation in ('std', 'standard'):
-        converter = _std_notation
-
-    else:
+    if converter is None:
         raise ValueError('Unknown notation: ' + str(notation))
 
     return converter(value, precision, delimiter, strip_zeros, preserve_integer)
-
 
 def _std_notation(value, precision, _, strip_zeros, preserve_integer) -> str:
     """
