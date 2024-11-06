@@ -293,7 +293,7 @@ class ViewImage(ProcessImage):
             self.slider_val_saved = self.confidence_slide_val.get()
             for _, _w in self.button.items():
                 _w.grid_remove()
-                self.show_info_message(info='\n\nProcessing...\n\n', color='black')
+                self.show_info_message(info='\nProcessing...\n\n', color='black')
             for _, _w in self.entry.items():
                 if not isinstance(_w, tk.StringVar):
                     _w.configure(state=tk.DISABLED)
@@ -773,7 +773,7 @@ class ViewImage(ProcessImage):
 
         # Work up some summary metrics with correct number of sig. fig.
         #  and estimated corrected oyster size metrics.
-        if num_oysters > 0 and self.interior_standards.size:
+        if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
             _cf = utils.get_correction_factor(self.box_ratio_mean)
             # Print for development:
             # print(f'box_ratio_mean: {self.box_ratio_mean}, correction_factor: {_cf}')
@@ -838,31 +838,31 @@ class ViewImage(ProcessImage):
         #  show_info_message() is the second element of the message tuple.
         processing_messages = (
             (self.true_pos_standards.size and (self.get_standard_sizes()).std() > 10, (
-                '\nDetected standards (red box) are different sizes.\n'
+                'Detected standards (red box) are different sizes.\n'
                 'Sizing results may be inaccurate.\n'
                 'Consider adjusting the Confidence level.\n',
                 "vermilion")),
             (len(self.predicted_boxes) >= const.PREDICT_MAX_DET, (
-                f'\nDETECTION LIMIT of {const.PREDICT_MAX_DET} WAS MET.\n'
+                f'DETECTION LIMIT of {const.PREDICT_MAX_DET} WAS MET.\n'
                 'Valid objects may have been excluded.\n'
                 'Sizing results may be inaccurate.\n'
                 'Consider increasing the Confidence level.',
                 "vermilion")),
             (len(self.true_pos_oysters) < len(self.interior_oysters), (
-                '\nOverlapping false positives were found and removed.\n'
+                'Overlapping false positives were found and removed.\n'
                 'Increase Confidence level if no size standard detected.\n\n',
                 "vermilion")),
             (len(self.true_pos_standards) < len(self.interior_standards), (
-                '\nOverlapping false positives were found and removed.\n'
+                'Overlapping false positives were found and removed.\n'
                 'Increasing Confidence level may improve results.\n\n',
                 "vermilion")),
             (self.first_run, (
-                f'\nInitial processing time elapsed: {self.elapsed}\n'
+                f'Initial processing time elapsed: {self.elapsed}\n'
                 'Identified size standard have a purple box.\n'
                 'Adjust Confidence level if any oysters have a purple box.\n',
                 "black")),
             (not self.first_run, (
-                '\nObject detections completed.\n'
+                'Object detections completed.\n'
                 f'{self.elapsed} processing seconds elapsed.\n'
                 'Identified size standard have a purple box.\n'
                 'Adjust Confidence level if any oysters have a purple box.\n',
@@ -983,7 +983,7 @@ class SetupApp(ViewImage):
 
         def _display_annotation_action(action: str, value: str):
             self.show_info_message(
-                '\nA new annotation style was applied.\n'
+                'A new annotation style was applied.\n'
                 f'{action} was changed to {value}.\n',
                 color='black')
 
@@ -997,7 +997,7 @@ class SetupApp(ViewImage):
             """
             _sf = round(value, 2)
             self.show_info_message(
-                f'\nA new scale factor of {_sf} was applied.\n\n',
+                f'A new scale factor of {_sf} was applied.\n\n',
                 color='black')
 
             for _title in const.WINDOW_TITLES:
@@ -1040,7 +1040,7 @@ class SetupApp(ViewImage):
                     caller=PROGRAM_NAME,
                 )
                 self.show_info_message(
-                    '\nResults report and annotated image were saved to\n'
+                    'Results report and annotated image were saved to\n'
                     f'the input image folder: {self.input_folder_name}\n',
                     color='blue')
 
@@ -1062,7 +1062,7 @@ class SetupApp(ViewImage):
                     # self.process_prediction()
                 else:  # User canceled input selection or closed messagebox window.
                     self.show_info_message(
-                        '\n\nNo new input file was selected.\n\n',
+                        'No new input file was selected.\n\n',
                         color='vermilion')
 
             # These methods are called from the "Style" menu of add_menu_bar()
@@ -1158,7 +1158,7 @@ class SetupApp(ViewImage):
                 self.set_defaults()
                 self.widget_control('off')  # is turned 'on' in process_prediction()
                 self.show_info_message(
-                    '\nSettings have been reset to their defaults.\n'
+                    'Settings have been reset to their defaults.\n'
                     'Check and adjust if needed.\n', color='blue')
 
 
@@ -1370,7 +1370,7 @@ class SetupApp(ViewImage):
                 self.input_ht, self.input_w, _ = self.cvimg['input'].shape
                 self.input_file_name = Path(self.input_file_path).name
                 self.input_folder_name = Path(self.input_file_path).parent.name
-                self.show_info_message(info=f'\n{self.input_file_name} loaded.\n'
+                self.show_info_message(info=f'{self.input_file_name} loaded.\n'
                                             f'Press Ctrl-U or "Process" to update\n',
                                        color='blue')
             elif parent != self.master:  # at startup file dialog, so quit.
@@ -1413,7 +1413,7 @@ class SetupApp(ViewImage):
         prev_fg = self.info_label.cget('fg')
 
         self.show_info_message(
-            info='\nThat window cannot be closed from its window bar.\n'
+            info='That window cannot be closed from its window bar.\n'
                  'Minimize it if it is in the way.\n'
                  'Esc or Ctrl-Q keys can quit the program.\n',
             color='vermilion')

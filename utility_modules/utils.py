@@ -409,19 +409,19 @@ def no_objects_found_msg(caller: str) -> None:
             'std_objects', 'oyster_objects', 'interior_std', 'interior_oyster'.
     """
     messages = {
-        'predicted_boxes': '\nNo objects were recognized.\n'
+        'predicted_boxes': 'No objects were recognized.\n'
                            'Try changing the confidence threshold.\n'
                            'Or try a different image.\n\n',
-        'std_objects': '\nNo size standards were recognized.\n'
+        'std_objects': 'No size standards were recognized.\n'
                        'Try changing the confidence threshold.\n'
                        'Or include a disk of known diameter in image\n\n',
-        'interior_std': '\nNo non-border size standards were recognized.\n'
+        'interior_std': 'No non-border size standards were recognized.\n'
                         'Try changing the confidence threshold.\n'
                         'Or try a different image with standard farther from edge.\n',
-        'interior_oyster': '\nNo non-border oysters were recognized.\n'
+        'interior_oyster': 'No non-border oysters were recognized.\n'
                            'Try changing the confidence threshold.\nO'
                            'Or try a different image with oysters farther from edges.\n',
-        'oyster_objects': '\nNo oysters were recognized.\n'
+        'oyster_objects': 'No oysters were recognized.\n'
                           'Try changing the confidence threshold.\n'
                           'Or try a different image.\n\n'
     }
