@@ -1185,7 +1185,8 @@ class SetupApp(ViewImage):
         #  managers position windows.
         w_offset = int(self.screen_width * 0.55)
         self.geometry(f'+{w_offset}+50')
-        self.wm_minsize(width=500, height=370)
+        win_ht = 340 if MY_OS == 'dar' else 370
+        self.wm_minsize(width=500, height=win_ht)
 
         # Need to allow complete tk mainloop shutdown from the system's
         #  window manager 'close' icon in the start window bar. And
