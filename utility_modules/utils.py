@@ -9,10 +9,12 @@ set_icon - Set the program icon image file.
 save_report_and_img- Save files of result image and its report.
 display_report - Place a formatted text string into a specified Frame.
 count_sig_fig - Count number of significant figures in a number.
+box_centers_very_close - Evaluate nearness of bounding box centers.
 box_is_very_close_inarray - List boxes that are very close to another box.
 auto_text_contrast - Select text color based on average brightness.
 quit_gui -  Error-free and informative exit from the program.
 no_objects_found - A simple messagebox when a contour pointset is empty.
+get_correction_factor - Calculate the correction factor using a linear equation.
 """
 # Copyright (C) 2022-2024 C.S. Echt, under GNU General Public License'
 

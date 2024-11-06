@@ -1,26 +1,23 @@
 """
-oystersize.py provides size metrics from images of samples of triploid
-Crassostrea virginica oysters in all stages of aquaculture production.
-With the user interacting through a tkinter GUI, the program
-can detect and classify oysters and size standard objects in an image.
-Once the size standard's known radius is entered, oyster sizes, mean,
-median, and range are reported, along with a size-annotated image.
-Results can be saved to file. It uses a pretrained YOLOv8n object
-detection model from Ultralytics. The oyster sizing model was trained
+oystersize.py provides size metrics of triploid Crassostrea
+virginica oysters from images of population samples for all stages of
+aquaculture production. With the user interacting through a tkinter GUI,
+the program detects and classifies oysters and size standard objects in
+an image. Once the size standard's known radius is entered, oyster sizes,
+mean, median, and range are reported, along with an annotated image.
+Results can be saved to file. Detection is based on a YOLOv8n model from
+Ultralytics using transfer learning. The oyster sizing model was trained
 on two custom classes: oyster images at various stages of growth, and
 real and synthetic disk-like images as size standards.
 
 Quit the program with Esc key, Ctrl-Q key, the close window icon of the
 report window or File menubar. From the command line, use Ctrl-C.
-See "Usage" in the README.md file for more information.
+See "Requirements" and "Usage" in the README.md file for more information.
 
-Requires Python 3.7 or later and the packages opencv-python, numpy,
-torch, tkinter, and ultralytics.
 Developed in Python and 3.10, tested up to 3.12.
 """
 # Copyright (C) 2024 C.S. Echt, under GNU General Public License
 # No warranty. Use at your own risk.
-# See README.md for details.
 
 # Standard library imports.
 from pathlib import Path
@@ -184,7 +181,7 @@ class ViewImage(ProcessImage):
         }
 
         self.button = {
-            'update_pred': ttk.Button(master=self),
+            'update': ttk.Button(master=self),
             'save_results': ttk.Button(master=self),
             'new_input': ttk.Button(master=self),
         }
@@ -222,7 +219,6 @@ class ViewImage(ProcessImage):
         self.input_file_path: str = ''
         self.input_file_name: str = ''
         self.input_folder_name: str = ''
-        self.input_folder_path: str = ''
         self.input_ht: int = 0
         self.input_w: int = 0
 
@@ -231,7 +227,6 @@ class ViewImage(ProcessImage):
         self.interior_oysters = np.array([])
         self.true_pos_standards = np.array([])
         self.true_pos_oysters = np.array([])
-        self.unique_oysters = np.array([])
         self.standards_mean_px_size: float = 0
         self.unit_per_px: float = 0
         self.standards_mean_measured_size = tk.DoubleVar()
@@ -469,8 +464,7 @@ class ViewImage(ProcessImage):
         """
         # Verify that entries are positive numbers.
         # Custom sizes can be entered only as integer or float.
-        entered_str = self.entry['size_std_val'].get()
-        entered_num = ''.join(_c for _c in entered_str
+        entered_num = ''.join(_c for _c in self.entry['size_std_val'].get()
                           if (_c.isdigit() or _c in {'.', '_'})
                           )
         try:
@@ -523,9 +517,9 @@ class ViewImage(ProcessImage):
 
     def get_sig_fig(self) -> int:
         """
-        Calculate the number of significant figures to use based on the
-        lesser of the entered custom size standard value and the
-        standard's pixel diameter. Called from convert_bbox_data(),
+        Calculate the number of significant figures to display based on
+        the lesser of the entered custom size standard value or the
+        standard mean pixel diameter. Called from convert_bbox_data(),
         display_metrics_in_image(), report_results(), process_sizes().
         Calls utils.count_sig_fig().
 
@@ -697,10 +691,7 @@ class ViewImage(ProcessImage):
 
         if self.oyster_sizes:
             mean_oyster_size = to_p.to_precision(
-                value=mean(self.oyster_sizes) * _cf,
-                precision=_sf
-            ) if _cf > 1.0 else to_p.to_precision(
-                value=mean(self.oyster_sizes),
+                value=mean(self.oyster_sizes) * _cf if _cf > 1.0 else mean(self.oyster_sizes),
                 precision=_sf
             )
         else:
@@ -728,7 +719,7 @@ class ViewImage(ProcessImage):
         )
         cv2.addWeighted(src1=overlay,
                         alpha=const.ALPHA,
-                        src2=self.cvimg['sized'].copy(),
+                        src2=self.cvimg['sized'].copy(),  # another copy, to avoid overwriting.
                         beta=1 - const.ALPHA,
                         gamma=0.0,
                         dst=self.cvimg['sized']
@@ -767,7 +758,6 @@ class ViewImage(ProcessImage):
                         )
         num_std_objects = len(self.true_pos_standards)
         num_oysters = len(self.true_pos_oysters)
-        # num_oysters = len(self.unique_oysters)
 
         sig_fig = self.get_sig_fig()
         avg_std_size: str = to_p.to_precision(
@@ -1307,8 +1297,8 @@ class SetupApp(ViewImage):
     def start_now(self) -> None:
         """
         Initiate the processing pipeline by setting up and configuring
-        all settings widgets.
-        Called from setup_start_window() with the "Process now...".
+        all widgets.
+        Called from main() at script start.
         Returns:
             None
         """
@@ -1343,7 +1333,7 @@ class SetupApp(ViewImage):
 
     def open_input(self, parent: Union[tk.Toplevel, 'SetupApp']) -> bool:
         """
-        Provides an open file dialog to select an initial or new input
+        Provides an open file dialog to select a starting or new input
         image file. Also sets a scale slider value for the displayed img.
         Called from start_now() and call_cmd().new_input.
         Args:
@@ -1378,8 +1368,7 @@ class SetupApp(ViewImage):
                 self.cvimg['input'] = cv2.imread(self.input_file_path)
                 self.input_ht, self.input_w, _ = self.cvimg['input'].shape
                 self.input_file_name = Path(self.input_file_path).name
-                self.input_folder_path = str(Path(self.input_file_path).parent)
-                self.input_folder_name = str(Path(self.input_folder_path).name)
+                self.input_folder_name = Path(self.input_file_path).parent.name
                 self.show_info_message(info=f'\n{self.input_file_name} loaded.\n'
                                             f'Press Ctrl-U or "Process" to update\n',
                                        color='blue')
@@ -1525,7 +1514,7 @@ class SetupApp(ViewImage):
             width=0,
             style='My.TButton')
 
-        self.button['update_pred'].config(
+        self.button['update'].config(
             text='Process or Update',
             command=self.process_prediction,
             **button_params)
@@ -1647,8 +1636,8 @@ class SetupApp(ViewImage):
             '<Control-Left>': self.call_cmd().decrease_scale_factor,
         }
 
-        # Some bindings are needed only for the settings and sized img windows,
-        #  but is simpler to use bind_all(), which does not depend on widget focus.
+        # Some bindings are needed only for the settings window, but it is
+        #  simpler to use bind_all(), which does not depend on widget focus.
         for event, function in event_function.items():
             self.bind_all(event, lambda _, f=function: f())
 
@@ -1677,7 +1666,7 @@ class SetupApp(ViewImage):
 
     def grid_widgets(self) -> None:
         """
-        Developer: Grid all widgets as a method to clarify spatial
+        Developer: Grid all widgets here, as a method, to clarify spatial
         relationships.
         Called from start_now().
         """
@@ -1712,7 +1701,7 @@ class SetupApp(ViewImage):
         self.entry['size_std_lbl2'].grid(column=1, row=1, **west_grid_params)
 
         # Buttons are in the mainloop window, not in a Frame.
-        self.button['update_pred'].grid(column=0, row=2, **button_grid_params)
+        self.button['update'].grid(column=0, row=2, **button_grid_params)
         self.button['save_results'].grid(column=0, row=3, **button_grid_params)
         self.button['new_input'].grid( column=0, row=4, **button_grid_params)
 
