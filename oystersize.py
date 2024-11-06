@@ -14,7 +14,7 @@ Quit the program with Esc key, Ctrl-Q key, the close window icon of the
 report window or File menubar. From the command line, use Ctrl-C.
 See "Requirements" and "Usage" in the README.md file for more information.
 
-Developed in Python and 3.10, tested up to 3.12.
+Developed using Python 3.9 through 3.12.7.
 """
 # Copyright (C) 2024 C.S. Echt, under GNU General Public License
 # No warranty. Use at your own risk.
@@ -22,10 +22,10 @@ Developed in Python and 3.10, tested up to 3.12.
 # Standard library imports.
 from pathlib import Path
 from signal import signal, SIGINT
-from statistics import mean, median, harmonic_mean, stdev
+from statistics import mean, median
 from sys import exit as sys_exit
 from time import time
-from typing import Union, List, Tuple, Any
+from typing import Union, List, Tuple
 
 # Third party imports.
 # tkinter(Tk/Tcl) is included with most Python3 distributions,
@@ -1206,12 +1206,13 @@ class SetupApp(ViewImage):
         # Accelerators use key binds from bind_functions() and
         #   bind_functions() and must be platform-specific.
         # Unicode arrow symbols: left \u2190, right \u2192, up \u2101, down \u2193
-        os_accelerator = 'Command' if MY_OS == 'dar' else 'Ctrl'
-        zoom_accelerator = 'Command-Shift' if MY_OS == 'dar' else 'Ctrl'
-        color_tip = ('shift-control-↑ & shift-control-↓'
+        os_accelerator = 'command' if MY_OS == 'dar' else 'Ctrl'
+        style_accelerator = 'control' if MY_OS == 'dar' else 'Ctrl'
+        zoom_accelerator = 'command-control' if MY_OS == 'dar' else 'Ctrl'
+        color_tip = ('command-↑ & command-↓'
                      if MY_OS == 'dar'
                      else 'Ctrl-↑ & Ctrl-↓')
-        zoom_tip = ('with shift-control-← & shift-control-→.'
+        zoom_tip = ('with command-control-← & command-control-→.'
                     if MY_OS == 'dar'
                     else 'with Ctrl-← & Ctrl-→.')
         plus_key, minus_key = ('+', '-') if MY_OS == 'dar' else ('(plus)', '(minus)')
@@ -1245,22 +1246,22 @@ class SetupApp(ViewImage):
 
         menu['Style'].add_command(label='Increase font size',
                                   command=self.call_cmd().increase_font_size,
-                                  accelerator=f'{os_accelerator}+{plus_key}')
+                                  accelerator=f'{style_accelerator}+{plus_key}')
         menu['Style'].add_command(label='Decrease font size',
                                   command=self.call_cmd().decrease_font_size,
-                                  accelerator=f'{os_accelerator}+{minus_key}')
+                                  accelerator=f'{style_accelerator}+{minus_key}')
         menu['Style'].add_command(label='Increase line thickness',
                                   command=self.call_cmd().increase_line_thickness,
-                                  accelerator=f'Shift+{os_accelerator}+{plus_key}')
+                                  accelerator=f'Shift+{style_accelerator}+{plus_key}')
         menu['Style'].add_command(label='Decrease line thickness',
                                   command=self.call_cmd().decrease_line_thickness,
-                                  accelerator=f'Shift+{os_accelerator}+{minus_key}')
+                                  accelerator=f'Shift+{style_accelerator}+{minus_key}')
         menu['Style'].add_command(label='Next color',
                                   command=self.call_cmd().next_font_color,
-                                  accelerator=f'{os_accelerator}+↑')
+                                  accelerator=f'{zoom_accelerator}+↑')
         menu['Style'].add_command(label='Prior color',
                                   command=self.call_cmd().preceding_font_color,
-                                  accelerator=f'{os_accelerator}+↓')
+                                  accelerator=f'{zoom_accelerator}+↓')
         menu['View'].add_command(label='Zoom images out',
                                  command=self.call_cmd().decrease_scale_factor,
                                  accelerator=f'{zoom_accelerator}+←')
@@ -1759,7 +1760,7 @@ def run_checks() -> None:
     """
     utils.check_platform()
     vcheck.minversion('3.9')
-    vcheck.maxversion('3.11')
+    vcheck.maxversion('3.12')
     manage.arguments()
 
 
