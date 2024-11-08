@@ -20,33 +20,35 @@ The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyste
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
 
 ### Requirements:
-Python 3.9 or later, plus the packages OpenCV-Python, NumPy, torch, and ultralytics. Tkinter (Tk/Tcl) is also required, but is most likely already included in your Python installation. Program development environments were Linux Ubuntu 22.04 (Python 3.10), Windows 11 (Python 3.11), and macOS 13.2 (Python 3.9). 
+Python 3.9 - 3.12, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports, and are included with an `ultralytics` installation using `pip`. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
 
-As with all repository downloads, it is best practice to install required packages in a Python virtual environment to avoid undesired changes in your system's Python library. The recommended way to set up a clean environment that has all packages and dependencies needed to run `oystersize.py` is to initially run these commands:
+Program development environments were Linux Ubuntu 22.04 (Python 3.10), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
 
-Build a venv directory in the current folder (use whatever venv name you like):
+As with all repository downloads, it is best practice to install required packages into a Python virtual environment. This avoids undesired changes in your system's Python library and ensures having all compatible dependencies. To use `oystersize.py`, the recommended way to set up a clean environment, one which has all required packages and dependencies, is with these commands:
+
+Create a venv directory in the current folder (use whatever directory name you like):
 
     `python3 -m venv oystersize_venv`
 
-Activate the virtual environment:
+Activate this new virtual environment:
 
     `source oystersize_venv/bin/activate` (Linux and macOS)
     `oystersize_venv\Scripts\activate` (Windows)
 
-Install the required packages (need latest versions of pip and ultralytics):
+Install the `ultralytics` package in the currently active virtual environment (need latest versions of `pip` and `ultralytics`):
 
     `python3 -m pip install --update pip` 
     `python3 -m pip install ultralytics`
 
-Installing the ultralytics package installs all required packages: numpy, opencv-python, torch, torchvision, Pillow, and NVIDIA tools to use a CUDA compatible GPU. If you don't have a CUDA GPU, the program will still run fine. If you already have the required packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics (the YOLO package). Building a virtual environment from scratch guarantees compatibility. 
+Installing the `ultralytics` package installs all needed program imports and NVIDIA tools to use a CUDA compatible GPU. If you don't have a CUDA GPU, the program will still run fine. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
 
-Now, whenever you want to run the program, activate this virtual environment, change directory to your downloaded repository directory, and run the program as described below in Usage.
+Now, whenever you want to use `oystersize.py`, just activate this virtual environment, change directory to your downloaded repository directory, and run it as described below in Usage.
 
-To deactivate a virtual environment, use the command `deactivate`.
+Deactivate a virtual environment with the command `deactivate`, or just close the terminal window.
 
 ### Usage:
 
-From within the downloaded repository folder, the recommended command line invocation is : `python3 -m oystersize` (or `py -m oystersize` on Windows). This will open the GUI window for selecting an image file for analysis. Currently supported image file formats are JPEG and PNG.
+From within your downloaded repository folder, the recommended command line invocation is : `python3 -m oystersize` (or `py -m oystersize` on Windows). This will open a window for selecting an image file for analysis. Currently supported image file formats are JPEG and PNG.
 
 To view basic information, author, version, license, etc.: `python3 -m oystersize --about`
 
@@ -60,7 +62,7 @@ Quit the program with Esc key, Ctrl-Q key, or the close window icon from the rep
 
 Sample image files are provided in this distribution's `images/examples` directory. From the opening window, users can browse to there or to whichever directory contains their image for analysis. Text file results and annotated images are saved to that same directory.
 
-Displayed image sizes are initially scaled based on screen size. Scaling can be changed later with the Ctrl-Left_arrow and Ctrl-Right_arrow keys (use Shift-Control on macOS) or from a menu pulldown.
+Displayed image sizes are initially scaled based on screen size. Scaling can be changed later with the Ctrl-Left_arrow and Ctrl-Right_arrow keys (use Shift-Control on macOS) or from a menu pull-down.
 
 Oysters or sizing disks extending beyond or within 3 pixels of the image edge are excluded from analysis.
 
