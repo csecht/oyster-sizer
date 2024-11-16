@@ -61,14 +61,14 @@ PREDICT_AUGMENT = False  # augment images for prediction, default False
 EDGE_PROXIMITY = 3  # minimum px distance between "interior" object and img edge.
 
 # 1.1 is a more conservative threshold for smaller oysters.
-# 1.17 box_ratio_mean is a rough threshold for mature oysters, from observations.
+# 1.17 bbox_ratio_mean is a rough threshold for mature oysters, from observations.
 BOX_RATIO_THRESHOLD = 1.15 # 1.17
 
 # Dictionary used to adjust the correction factor based on the box ratio.
 # Values empirically determined based on manual calibration measurements of
 #   mature oysters. Needs verification with younger oysters.
 #  Used to create linear equation in ViewImage.get_correction_factor().
-# Keys are the box_ratio_mean, values are the correction factor.
+# Keys are the bbox_ratio_mean, values are the correction factor.
 correction_factors = {
     1.15: 1.005,
     1.16: 1.01,

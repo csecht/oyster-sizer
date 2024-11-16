@@ -6,6 +6,7 @@ check_platform - Exit if not Linux, Windows, or macOS.
 program_name - Get the program name for file paths and window titles.
 valid_path_to - Get correct path to program's files.
 set_icon - Set the program icon image file.
+set_line_thickness - Set line thickness as function of screen width.
 save_report_and_img- Save files of result image and its report.
 display_report - Place a formatted text string into a specified Frame.
 count_sig_fig - Count number of significant figures in a number.
@@ -143,6 +144,19 @@ def set_icon(window: Union[tk.Toplevel, tk.Tk]) -> None:
     except FileNotFoundError as fnf:
         print(f'Cannot find program icon file: {fnf}.\n'
               'The program will run without a custom icon image.')
+
+
+def set_line_thickness(mainloop: tk.Tk,) -> int:
+    """
+    Set the line thickness for drawing on the *window*, as a function
+    of screen width (not window or image size).
+
+    Args: mainloop:
+        The main tk.Tk() window running the mainloop, e.g., 'self'.
+    Returns:
+        Line thickness as an integer.
+    """
+    return max(round(mainloop.winfo_screenwidth() * const.LINE_THICKNESS_FACTOR), 1)
 
 
 def save_report_and_img(path2folder: str,

@@ -132,9 +132,9 @@ class ProcessImage(tk.Tk):
         )
 
         # Device-agnostic conversion of tensors to numpy arrays.
-        boxes = results[0].boxes
-        self.predicted_boxes = boxes.xywh.numpy(force=True).astype(int)
-        self.predicted_class_distribution = boxes.cls.numpy(force=True).astype(int)
+        box_data = results[0].boxes
+        self.predicted_boxes = box_data.xywh.numpy(force=True).astype(int)
+        self.predicted_class_distribution = box_data.cls.numpy(force=True).astype(int)
 
 
 class ViewImage(ProcessImage):
@@ -230,7 +230,7 @@ class ViewImage(ProcessImage):
         self.standards_mean_px_size: float = 0
         self.unit_per_px: float = 0
         self.standards_mean_measured_size = tk.DoubleVar()
-        self.box_ratio_mean: float = 0
+        self.bbox_ratio_mean: float = 0
         self.oyster_sizes: List[float] = []
         self.report_txt: str = ''
 
@@ -274,12 +274,12 @@ class ViewImage(ProcessImage):
 
     def widget_control(self, action: str) -> None:
         """
-        Used to disable settings widgets when segmentation is running.
-        Provides a watch cursor while widgets are disabled.
-        Gets Scale() values at time of disabling and resets them upon
-        enabling, thus preventing user click events retained in memory
-        during processing from changing slider position post-processing.
-
+        Used to disable settings widgets when processing is running.
+        Provides a watch cursor while widgets are disabled. Also, gets
+        Scale() values at time of disabling and resets them upon
+        enabling, thus preventing user click events, which are retained
+        in memory during processing, from changing slider position
+        post-processing. Called from process_prediction().
         Args:
             action: Either 'off' to disable widgets, or 'on' to enable.
         Returns:
@@ -431,17 +431,23 @@ class ViewImage(ProcessImage):
             if are_not_close_to_standards.size else np.array([])
         )
 
-    def determine_oyster_ratio_means(self) -> None:
+    def set_bbox_ratio_mean(self, bbox_ary) -> None:
         """
-        Calculate the width and height bounding box ratios of oysters
-        and get the mean to use in a size correction factor.
+        Calculate the width and height bounding box ratios of objects
+        and set the mean for setting a size correction factor. Generally
+        used for oysters, but can be used for standards as well.
         Called from process_sizes().
+
+        Args:
+            bbox_ary: A numpy array of bounding boxes in xywh format.
         Returns: None
         """
-        if self.true_pos_oysters.size:
-            wh_max = self.true_pos_oysters[:, 2:].max(axis=1)
-            wh_min = self.true_pos_oysters[:, 2:].min(axis=1)
-            self.box_ratio_mean = (wh_max / wh_min).mean()
+        if bbox_ary.size:
+            wh_max = bbox_ary[:, 2:].max(axis=1)
+            wh_min = bbox_ary[:, 2:].min(axis=1)
+            self.bbox_ratio_mean = (wh_max / wh_min).mean()
+        else:
+            self.bbox_ratio_mean = 0
 
     def get_standard_sizes(self) -> np.ndarray:
         """
@@ -640,7 +646,7 @@ class ViewImage(ProcessImage):
                     lineType=cv2.LINE_AA,
                     )
 
-    def display_all_objects(self, event=None) -> None:
+    def display_all_objects(self, event=None) -> Event:
         """
         Draw all annotated objects in the image, with their size, in a
         bounding box rectangle.
@@ -648,8 +654,9 @@ class ViewImage(ProcessImage):
         Calls convert_bbox_data(), annotate_object(), update_image().
 
         Args:
-             event: Used for any implicit tkinter event.
-        Returns: None
+            event: Used for any implicit tkinter event.
+        Returns:
+            Event, a formality to pass IDE inspections.
         """
 
         self.cvimg['sized'] = self.cvimg['input'].copy()
@@ -687,7 +694,7 @@ class ViewImage(ProcessImage):
         """
 
         _sf = self.get_sig_fig()
-        _cf = utils.get_correction_factor(self.box_ratio_mean)
+        _cf = utils.get_correction_factor(self.bbox_ratio_mean)
 
         if self.oyster_sizes:
             mean_oyster_size = to_p.to_precision(
@@ -774,9 +781,9 @@ class ViewImage(ProcessImage):
         # Work up some summary metrics with correct number of sig. fig.
         #  and estimated corrected oyster size metrics.
         if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
-            _cf = utils.get_correction_factor(self.box_ratio_mean)
+            _cf = utils.get_correction_factor(self.bbox_ratio_mean)
             # Print for development:
-            # print(f'box_ratio_mean: {self.box_ratio_mean}, correction_factor: {_cf}')
+            # print(f'bbox_ratio_mean: {self.bbox_ratio_mean}, correction_factor: {_cf}')
             mean_oyster_len: str = to_p.to_precision(
                 value=mean(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0],
                 precision=sig_fig)
@@ -885,14 +892,14 @@ class ViewImage(ProcessImage):
 
         self.find_interior_objects()
         self.find_true_pos_objects()
-        self.determine_oyster_ratio_means()
+        self.set_bbox_ratio_mean(bbox_ary=self.true_pos_oysters)
         self.validate_size_entry()
         self.determine_mean_standard_size()
         self.get_sig_fig()
         self.display_all_objects()
         self.report_results()
 
-    def process_prediction(self, event=None) -> None:
+    def process_prediction(self, event=None) -> Event:
         """
         Calls methods Process_image.prediction() and process_sizes(),
         which in turn calls methods for filtering, measuring, annotating,
@@ -900,8 +907,9 @@ class ViewImage(ProcessImage):
         Called from start_now() and various callbacks and bindings.
 
         Args:
-            event: An implicitly passed keyboard or mouse event.
-        Returns: None
+            event: Used for any implicit tkinter event.
+        Returns:
+            Event, a formality to pass IDE inspections.
         """
 
         # If no objects found, then no need to update beyond prediction().
@@ -1048,9 +1056,7 @@ class SetupApp(ViewImage):
             def new_input():
                 """
                 Reads a new image file for preprocessing.
-                Calls open_input(), update_image(), watershed_window.withdraw()
-                self & process_prediction(), or show_info_message() &
-                delay_size_std_info_msg().
+                Calls open_input(), set_auto_scale_factor(), update_image().
                 Called from keybinding, menu, and button commands.
 
                 Returns: None
@@ -1059,7 +1065,6 @@ class SetupApp(ViewImage):
                 if self.open_input(parent=self.master):
                     self.set_auto_scale_factor()
                     self.update_image(name='input')
-                    # self.process_prediction()
                 else:  # User canceled input selection or closed messagebox window.
                     self.show_info_message(
                         'No new input file was selected.\n\n',
@@ -1397,13 +1402,14 @@ class SetupApp(ViewImage):
         # Auto-set images' scale factor based on input image px dimensions.
         #  Can be later reset with keybindings in bind_scale_adjustment().
         self.metrics = manage.input_metrics(img=self.cvimg['input'])
-        self.line_thickness = self.metrics['line_thickness']
+        self.line_thickness = self.metrics['line_thickness']  # img size dependent
+        # self.line_thickness = utils.set_line_thickness(self)  # screen size dependent
         self.font_scale = self.metrics['font_scale']
         return True
 
     def close_window_message(self) -> None:
         """
-        Provide a notice in report and settings (mainloop, self)
+        Provide a notice in Report and Settings (mainloop, self)
         window.
         Called only as a .protocol() func in setup_image_windows().
 
@@ -1664,7 +1670,7 @@ class SetupApp(ViewImage):
 
         self.color_val.set('gold1')
         self.entry['size_std_val'].set('1')
-        self.confidence_slide_val.set(75)
+        self.confidence_slide_val.set(80)  # 0.80 confidence was used for training.
 
     def grid_widgets(self) -> None:
         """
