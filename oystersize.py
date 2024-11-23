@@ -127,7 +127,7 @@ class ProcessImage(tk.Tk):
             device=available_device,
             iou=const.PREDICT_IOU,
             max_det=const.PREDICT_MAX_DET,
-            # half=const.PREDICT_HALF,
+            half=const.PREDICT_HALF,
             verbose=False,
         )
 
@@ -1799,9 +1799,14 @@ def main() -> None:
     # Source: https://stackoverflow.com/questions/39840815/
     #   exiting-a-tkinter-app-with-ctrl-c-and-catching-sigint
     # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
-    # Can comment out next three lines when using PyInstaller.
-    signal(signalnum=SIGINT, handler=lambda x, y: app.destroy())
-    tk_check = lambda: app.after(500, tk_check)
+    # Can comment out next three statements when using PyInstaller.
+    signal(signalnum=SIGINT,
+           handler=lambda x, y: utils.quit_gui(app, confirm=False)
+           )
+
+    def tk_check():
+        app.after(500, tk_check)
+
     app.after(500, tk_check)
 
     app.mainloop()
