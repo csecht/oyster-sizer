@@ -48,17 +48,17 @@ import numpy as np
 
 MY_OS: str = platform[:3]  # 'lin', 'win', or 'dar'
 
-# The YOLO model folder for weights/best.pt in models directory
-#  and Ultralytics predict function settings.
+# The YOLO model and Ultralytics prediction() function arguments.
 MODEL_NAME = 'oyster_yolo11n_960_103e_20b'
-PREDICT_IMGSZ = 960  # model input image object_size, default 640
-PREDICT_IOU = 0.70 # intersection-over-union threshold, default 0.70
+PREDICT_IMGSZ = 960  # set to match model training size, default 640. Must be multiple of max stride 32.
+PREDICT_IOU = 0.70  # intersection-over-union threshold, default 0.70
 PREDICT_MAX_DET = 400  # maximum detections per image, default 300
 # When possible, use half precision to speed prediction; default False.
 PREDICT_HALF = False if MY_OS == 'dar' else True
 PREDICT_AUGMENT = False  # augment images for prediction, default False
 
-EDGE_PROXIMITY = 3  # minimum px distance between "interior" object and img edge.
+# Minimum px distance between "interior" object and img edge.
+EDGE_PROXIMITY = 3
 
 # 1.1 is a more conservative threshold for smaller oysters.
 # 1.17 bbox_ratio_mean is a rough threshold for mature oysters, from observations.
