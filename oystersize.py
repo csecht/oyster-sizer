@@ -1784,6 +1784,10 @@ def main() -> None:
 
     # Check system, versions, and command line arguments.
     # Exit if any critical check fails or if the --about argument is used.
+    # Comment out if using PyInstaller to create an executable.
+    #  PyInstaller for Windows will still need to run check_platform()
+    #  for DPI Awareness scaling issues.
+
     run_checks()
 
     # Instantiating SetupApp() initializes the mainloop window through
@@ -1799,15 +1803,15 @@ def main() -> None:
     # Source: https://stackoverflow.com/questions/39840815/
     #   exiting-a-tkinter-app-with-ctrl-c-and-catching-sigint
     # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
-    # Can comment out next three statements when using PyInstaller.
+    # Comment out the following statements before mainloop() when using PyInstaller.
     signal(signalnum=SIGINT,
-           handler=lambda x, y: utils.quit_gui(app, confirm=False)
-           )
+           handler=lambda x, y: utils.quit_gui(mainloop=app, confirm=False))
 
-    def tk_check():
-        app.after(500, tk_check)
+    def tk_check(msec):
+        app.after(msec, tk_check, msec)
 
-    app.after(500, tk_check)
+    poll_ms = 500
+    app.after(poll_ms, tk_check, poll_ms)
 
     app.mainloop()
 
