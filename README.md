@@ -37,7 +37,7 @@ Activate this new virtual environment:
 
 Install the `ultralytics` package in the currently active virtual environment (need latest versions of `pip` and `ultralytics`):
 
-    `python3 -m pip install --update pip` 
+    `python3 -m pip install --upgrade pip` 
     `python3 -m pip install ultralytics`
 
 Installing the `ultralytics` package installs all needed program imports and NVIDIA tools to use a CUDA compatible GPU. If you don't have a CUDA GPU, the program will still run fine. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
