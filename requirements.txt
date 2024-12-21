@@ -1,4 +1,7 @@
-ultralytics
+ultralytics==8.3.38
+
+# last known good version: 8.3.38 (2024-12-02) running Python 3.12 and pip 24.3.1
+#  Later versions will through mystifying errors. If you encounter such errors, revert to this version.
 
 # ^^As used for development on Ubuntu 22.04 running Python 3.10, windows11 running Python11, macOS running Python12
 # With a compatible Python version, the ultralytics package installs all necessary dependencies when none are present.

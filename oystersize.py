@@ -1766,7 +1766,7 @@ def run_checks() -> None:
             None
     """
     utils.check_platform()
-    vcheck.minversion('3.9')
+    vcheck.minversion('3.10')
     vcheck.maxversion('3.12')
     manage.arguments()
 
@@ -1787,11 +1787,10 @@ def main() -> None:
     # Comment out if using PyInstaller to create an executable.
     #  PyInstaller for Windows will still need to run check_platform()
     #  for DPI Awareness scaling issues.
-
     run_checks()
 
     # Instantiating SetupApp() initializes the mainloop window through
-    #  multilevel inheritance. The mainloop window originates from
+     #  multilevel inheritance. The mainloop window originates from
     #  ProcessImage(), which inherits from Tk, thus creating the window.
     app = SetupApp()
     print(f'{PROGRAM_NAME} has launched...')
