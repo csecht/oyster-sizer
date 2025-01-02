@@ -839,13 +839,13 @@ class ViewImage(ProcessImage):
         Calls show_info_message(), get_standard_sizes().
         """
 
-        # Elements are in order of display priority.
+        # Elements are in order of condition priority.
         #  The first true condition will break the loop and be the one
         #  displayed in the info_label. The color for message text in
         #  show_info_message() is the second element of the message tuple.
-        processing_messages = (
+        processing_info_messages = (
             (self.true_pos_standards.size and (self.get_standard_sizes()).std() > 10, (
-                'Detected standards (red box) are different sizes.\n'
+                'Detected standards (purple box) are different sizes.\n'
                 'Sizing results may be inaccurate.\n'
                 'Consider adjusting the Confidence level.\n',
                 "vermilion")),
@@ -875,7 +875,7 @@ class ViewImage(ProcessImage):
                 'Adjust Confidence level if any oysters have a purple box.\n',
                 "blue")),
         )
-        for condition, message in processing_messages:
+        for condition, message in processing_info_messages:
             if condition:
                 self.show_info_message(info=message[0], color=message[1])
                 break
