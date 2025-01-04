@@ -693,14 +693,15 @@ class ViewImage(ProcessImage):
         Returns: None
         """
 
-        _sf = self.get_sig_fig()
-        _cf = utils.get_correction_factor(self.bbox_ratio_mean)
+        _sf: int = self.get_sig_fig()
+        _cf: float = utils.get_correction_factor(self.bbox_ratio_mean)
 
         if self.oyster_sizes:
-            mean_oyster_size = to_p.to_precision(
-                value=mean(self.oyster_sizes) * _cf if _cf > 1.0 else mean(self.oyster_sizes),
-                precision=_sf
-            )
+            mean_size: float = mean(self.oyster_sizes) * _cf if _cf > 1.0 else self.oyster_sizes[0]
+            if self.entry['size_std_val'].get() == '1':
+                mean_oyster_size = str(int(mean_size))
+            else:
+                mean_oyster_size = to_p.to_precision(value=mean_size, precision=_sf)
         else:
             mean_oyster_size = 'n/a'
 
@@ -760,8 +761,8 @@ class ViewImage(ProcessImage):
         """
 
         size_std_dia = ('1, sizes are in pixels'
-                        if self.entry['size_entry'].get() == '1'
-                        else self.entry['size_entry'].get()
+                        if self.entry['size_std_val'].get() == '1'
+                        else self.entry['size_std_val'].get()
                         )
         num_std_objects = len(self.true_pos_standards)
         num_oysters = len(self.true_pos_oysters)
@@ -780,30 +781,34 @@ class ViewImage(ProcessImage):
 
         # Work up some summary metrics with correct number of sig. fig.
         #  and estimated corrected oyster size metrics.
+        # When displaying sizes as pixels, don't apply sig. fig.
         if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
             _cf = utils.get_correction_factor(self.bbox_ratio_mean)
-            # Print for development:
-            # print(f'bbox_ratio_mean: {self.bbox_ratio_mean}, correction_factor: {_cf}')
-            mean_oyster_len: str = to_p.to_precision(
-                value=mean(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0],
-                precision=sig_fig)
-            median_oyster_len: str = to_p.to_precision(
-                value=median(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0],
-                precision=sig_fig)
+            mean_size: float = mean(self.oyster_sizes) * _cf if _cf > 1.0 else self.oyster_sizes[0]
+            median_size: float = median(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0]
+            if self.entry['size_std_val'].get() == '1':
+                mean_oyster_size = str(int(mean_size))
+                median_oyster_len = str(int(median_size))
+                smallest = str(int(min(self.oyster_sizes)))
+                biggest = str(int(max(self.oyster_sizes)))
+            else:
+                mean_oyster_size: str = to_p.to_precision(
+                    value=mean_size,
+                    precision=sig_fig)
+                median_oyster_len: str = to_p.to_precision(
+                    value=median_size,
+                    precision=sig_fig)
+                smallest: str = to_p.to_precision(value=min(self.oyster_sizes), precision=sig_fig)
+                biggest: str = to_p.to_precision(value=max(self.oyster_sizes), precision=sig_fig)
+
             median_oyster_txt = (f'{median_oyster_len} (corrected: {"+" if _cf > 1.0 else ""}'
-                                 f'{round((_cf - 1) * 100, 1)}%)')
-            smallest: str = to_p.to_precision(
-                value=min(self.oyster_sizes),
-                precision=sig_fig)
-            biggest: str = to_p.to_precision(
-                value=max(self.oyster_sizes),
-                precision=sig_fig)
+                                     f'{round((_cf - 1) * 100, 1)}%)')
             size_range: str = f'{smallest}--{biggest}'
         elif not self.interior_standards.size:
-            mean_oyster_len = median_oyster_txt = size_range = 'n/a'
+            mean_oyster_size = median_oyster_txt = size_range = 'n/a'
             avg_std_size = 'n/a'
         else:  # standards found, but no oysters found.
-            mean_oyster_len = median_oyster_txt = size_range = 'n/a'
+            mean_oyster_size = median_oyster_txt = size_range = 'n/a'
 
         # Text is formatted for clarity in window, terminal, and saved file.
         # Divider symbol is Box Drawings Double Horizontal from https://coolsymbol.com/
@@ -823,7 +828,7 @@ class ViewImage(ProcessImage):
             f'{"# standards:".ljust(space)}{num_std_objects}\n'
             f'{"Entered standard size:".ljust(space)}diameter = {size_std_dia}\n'
             f'{"Avg. standard size used:".ljust(space)}{avg_std_size}\n'
-            f'{"Oyster sizes:".ljust(space)}average = {mean_oyster_len},'
+            f'{"Oyster sizes:".ljust(space)}average = {mean_oyster_size},'
             f' median = {median_oyster_txt},\n'
             f'{tab}range = {size_range} (uncorrected)'
         )
