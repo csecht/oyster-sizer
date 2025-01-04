@@ -701,13 +701,14 @@ class ViewImage(ProcessImage):
             if self.entry['size_std_val'].get() == '1':
                 mean_oyster_size = str(int(mean_size))
             else:
-                mean_oyster_size = to_p.to_precision(value=mean_size, precision=_sf)
+                mean_oyster_size = (f'{to_p.to_precision(value=mean_size, precision=_sf)};'
+                                    f' {_sf} sig figs')
         else:
             mean_oyster_size = 'n/a'
 
         display_metrics = (
             f'Image: {self.input_file_name}\n'
-            f'Avg Size: {mean_oyster_size}; {_sf} sig figs\n'
+            f'Avg Size: {mean_oyster_size}\n'
             f'Counted: {len(self.oyster_sizes)}\n'
         )
 
@@ -738,7 +739,7 @@ class ViewImage(ProcessImage):
         for i, line in enumerate(display_metrics.split('\n'), start=1):
             _y = i * img_height // 50 + y_offset
             cv2.putText(img=self.cvimg['sized'],
-                        org=(10, round(_y)),  # add 5 to the x indent of rect pt1.
+                        org=(10, round(_y)),  # add 5 to the x indent of cv2.rectangle pt1.
                         text=line,
                         fontFace=const.FONT_TYPE,
                         fontScale=self.font_scale,
@@ -792,12 +793,8 @@ class ViewImage(ProcessImage):
                 smallest = str(int(min(self.oyster_sizes)))
                 biggest = str(int(max(self.oyster_sizes)))
             else:
-                mean_oyster_size: str = to_p.to_precision(
-                    value=mean_size,
-                    precision=sig_fig)
-                median_oyster_len: str = to_p.to_precision(
-                    value=median_size,
-                    precision=sig_fig)
+                mean_oyster_size: str = to_p.to_precision(value=mean_size, precision=sig_fig)
+                median_oyster_len: str = to_p.to_precision(value=median_size, precision=sig_fig)
                 smallest: str = to_p.to_precision(value=min(self.oyster_sizes), precision=sig_fig)
                 biggest: str = to_p.to_precision(value=max(self.oyster_sizes), precision=sig_fig)
 
