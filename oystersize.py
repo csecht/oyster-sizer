@@ -768,14 +768,14 @@ class ViewImage(ProcessImage):
         num_std_objects = len(self.true_pos_standards)
         num_oysters = len(self.true_pos_oysters)
 
-        sig_fig = self.get_sig_fig()
+        sig_fig: int = self.get_sig_fig()
         avg_std_size: str = to_p.to_precision(
             value=str(self.standards_mean_measured_size.get()),
             precision=sig_fig)
 
         # Need this hack when a new image is opened, but instead of clicking
         #  "Process or Update", the user again clicks "New input"
-        #  followed by 'Cancel', before clicking "Process or Update".
+        #  followed by 'Cancel' before clicking "Process or Update".
         #  This is a rare case, but results in input_file_path being empty.
         #  The processed input_file_name is retained, so report that.
         input_file = self.input_file_name if not self.input_file_path else self.input_file_path
@@ -783,22 +783,23 @@ class ViewImage(ProcessImage):
         # Work up some summary metrics with correct number of sig. fig.
         #  and estimated corrected oyster size metrics.
         # When displaying sizes as pixels, don't apply sig. fig.
-        if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
-            _cf = utils.get_correction_factor(self.bbox_ratio_mean)
+        # if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
+        if self.oyster_sizes and self.interior_standards.size:
+            _cf: float = utils.get_correction_factor(self.bbox_ratio_mean)
             mean_size: float = mean(self.oyster_sizes) * _cf if _cf > 1.0 else self.oyster_sizes[0]
             median_size: float = median(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0]
             if self.entry['size_std_val'].get() == '1':
                 mean_oyster_size = str(int(mean_size))
-                median_oyster_len = str(int(median_size))
+                median_oyster_size = str(int(median_size))
                 smallest = str(int(min(self.oyster_sizes)))
                 biggest = str(int(max(self.oyster_sizes)))
             else:
                 mean_oyster_size: str = to_p.to_precision(value=mean_size, precision=sig_fig)
-                median_oyster_len: str = to_p.to_precision(value=median_size, precision=sig_fig)
+                median_oyster_size: str = to_p.to_precision(value=median_size, precision=sig_fig)
                 smallest: str = to_p.to_precision(value=min(self.oyster_sizes), precision=sig_fig)
                 biggest: str = to_p.to_precision(value=max(self.oyster_sizes), precision=sig_fig)
 
-            median_oyster_txt = (f'{median_oyster_len} (corrected: {"+" if _cf > 1.0 else ""}'
+            median_oyster_txt = (f'{median_oyster_size} (corrected: {"+" if _cf > 1.0 else ""}'
                                      f'{round((_cf - 1) * 100, 1)}%)')
             size_range: str = f'{smallest}--{biggest}'
         elif not self.interior_standards.size:
@@ -925,7 +926,10 @@ class ViewImage(ProcessImage):
         self.prediction()
         if self.predicted_boxes.size:
             self.process_sizes()
-            self.elapsed = round(time() - self.time_start, 3)
+            self.elapsed =(round(time() - self.time_start, 3)
+                           if (self.interior_standards.size and
+                               self.interior_oysters.size)
+                           else 'n/a')
         else:
             utils.no_objects_found_msg(caller='predicted_boxes')
             self.oyster_sizes.clear()
