@@ -309,7 +309,7 @@ def count_sig_fig(entry_number: Union[int, float, str]) -> int:
     return len(sigfig_str.lstrip('0'))
 
 
-def box_centers_very_close(box_a: list, box_b: list) -> bool:
+def box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
     """
     Evaluate nearness of standard and oyster bounding boxes that are
     center-oriented, as in YOLO format: x-ctr, y-ctr, width, height.
@@ -323,17 +323,20 @@ def box_centers_very_close(box_a: list, box_b: list) -> bool:
     Args:
         box_a: A numpy array element for a bounding box, in [x y w h] format.
         box_b: A numpy array element for another bounding box, in [x y w h] format.
+        closeness: A float value for the nearness threshold, between 0 and 1.
     Returns: True if the boxes are close, False if not.
     """
     # https://gamedev.stackexchange.com/questions/586/
     #   what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
-    # Closeness threshold is 10% of the sum of the widths and heights.
-    return ((abs(box_a[0] - box_b[0]) < (box_a[2] + box_b[2]) * 0.1) and
-                (abs(box_a[1] - box_b[1]) < (box_a[3] + box_b[3]) * 0.1))
+    # *closeness* threshold is proportion of the sum of the widths and heights.
+    #  0.1 is a 10% threshold, and works well for most cases.
+    return ((abs(box_a[0] - box_b[0]) < (box_a[2] + box_b[2]) * closeness) and
+                (abs(box_a[1] - box_b[1]) < (box_a[3] + box_b[3]) * closeness))
 
 
 def box_is_very_close_inarray(box: List[np.ndarray],
-                              arr: np.ndarray) -> List[np.ndarray]:
+                              arr: np.ndarray,
+                              closeness: float) -> List[np.ndarray]:
     """
     Return a list of boxes from the *box* numpy array that are very clos
     to any element in the *arr* array of bounding boxes nearness. When
@@ -344,10 +347,14 @@ def box_is_very_close_inarray(box: List[np.ndarray],
 
     Args: box: A single bounding box, in [[x y w h]] format.
           arr: A numpy array of bounding boxes, each in [x y w h] format.
+          closeness: A passthrough value for the nearness threshold used
+          by box_centers_very_close().
     Returns: A list of strongly overlapping numpy array bounding boxes,
              in [x y w h] format.
     """
-    return [ary_box for ary_box in arr if box_centers_very_close(box, ary_box)]
+    return [ary_box for ary_box in arr if box_centers_very_close(box,
+                                                                 ary_box,
+                                                                 closeness)]
 
 
 def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple:

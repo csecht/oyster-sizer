@@ -409,17 +409,18 @@ class ViewImage(ProcessImage):
         Calls utils.box_is_very_close_inarray().
         Returns: None
         """
-        # Note: may need to adjust nearness tolerance of utils.centered_boxes_very_close().
+        # Note: may need to adjust closeness threshold tolerance of
+        #   utils.centered_boxes_very_close(); 0.1 is a good starting point.
         # This vectorized approach may not be faster than using list expressions,
-        #  but, when properly named, it is more readable and maintainable. And it
-        #  is a good example of using numpy array indexing.
+        #  but, when properly named, it is more readable and maintainable.
+        #  And it is a good example of using numpy array indexing.
 
         are_not_close_to_standards = np.array(
-            [not utils.box_is_very_close_inarray(box, self.interior_standards)
+            [not utils.box_is_very_close_inarray(box, self.interior_standards, 0.1)
              for box in self.interior_oysters]
         )
         are_not_close_to_oysters = np.array(
-            [not utils.box_is_very_close_inarray(box, self.interior_oysters)
+            [not utils.box_is_very_close_inarray(box, self.interior_oysters,0.1)
              for box in self.interior_standards]
         )
         self.true_pos_standards = (
