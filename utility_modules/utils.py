@@ -117,13 +117,11 @@ def valid_path_to(input_path: str) -> Path:
     # Note that Path(Path(__file__).parent is the utility_modules folder.
     # Modified from: https://stackoverflow.com/questions/7674790/
     #    bundling-data-files-with-pyinstaller-onefile and PyInstaller manual.
-    if getattr(sys, 'frozen', False):  # hasattr(sys, '_MEIPASS'):
-        base_path = getattr(sys, '_MEIPASS', Path(Path(__file__).resolve()).parent)
-        valid_path = Path(base_path) / input_path
-    else:
-        valid_path = Path(f'{input_path}').resolve()
-
-    return valid_path
+    base_path = (
+        getattr(sys, '_MEIPASS', Path(__file__).resolve().parent)
+        if getattr(sys, 'frozen', False) else None
+    )
+    return Path(base_path) / input_path if base_path else Path(input_path).resolve()
 
 
 def set_icon(window: Union[tk.Toplevel, tk.Tk]) -> None:
@@ -214,8 +212,6 @@ def save_report_and_img(path2folder: str,
     with open(report_file_path, mode='a', encoding='utf-8') as fp:
         fp.write(data2save)
 
-    # Contour images are np.ndarray direct from cv2 functions, while
-    #   other images are those displayed as ImageTk.PhotoImage.
     if isinstance(img2save, np.ndarray):
         cv2.imwrite(filename=saved_img_path, img=img2save)
     elif isinstance(img2save, ImageTk.PhotoImage):
@@ -330,8 +326,8 @@ def box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
     #   what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
     # *closeness* threshold is proportion of the sum of the widths and heights.
     #  0.1 is a 10% threshold, and works well for most cases.
-    return ((abs(box_a[0] - box_b[0]) < (box_a[2] + box_b[2]) * closeness) and
-                (abs(box_a[1] - box_b[1]) < (box_a[3] + box_b[3]) * closeness))
+    return (abs(box_a[0] - box_b[0]) < (box_a[2] + box_b[2]) * closeness and
+            abs(box_a[1] - box_b[1]) < (box_a[3] + box_b[3]) * closeness)
 
 
 def box_is_very_close_inarray(box: List[np.ndarray],
@@ -429,7 +425,7 @@ def no_objects_found_msg(caller: str) -> None:
         caller: The calling statement context; e.g. 'predicted_boxes',
             'std_objects', 'oyster_objects', 'interior_std', 'interior_oyster'.
     """
-    messages = {
+    caller_messages = {
         'predicted_boxes': 'No objects were recognized.\n'
                            'Try changing the confidence threshold.\n'
                            'Or try a different image.\n\n',
@@ -446,7 +442,7 @@ def no_objects_found_msg(caller: str) -> None:
                           'Try changing the confidence threshold.\n'
                           'Or try a different image.\n\n'
     }
-    messagebox.showinfo(detail=messages.get(caller, 'No objects found: reason unknown.'))
+    messagebox.showinfo(detail=caller_messages.get(caller, 'No objects found: reason unknown.'))
 
 
 def get_correction_factor(box_ratio_mean: float) -> float:
