@@ -384,7 +384,7 @@ def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple:
     _B, _G, _R = np.mean(center_area, axis=0).mean(axis=0)
     _pb = ((.068 * _B ** 2) + (.691 * _G ** 2) + (.241 * _R ** 2)) ** 0.5
 
-    return const.COLORS_CV['white'] if _pb > 145 else const.COLORS_CV['black']
+    return const.COLORS_CV['white'] if _pb < 145 else const.COLORS_CV['black']
 
 
 def quit_gui(mainloop: tk.Tk, confirm=True) -> None:

@@ -979,7 +979,7 @@ class SetupApp(ViewImage):
         self.menubar = tk.Menu()
         self.menu_labels: tuple = ()
 
-    def call_cmd(self):
+    def call_cmd(self) -> '_Command':
         """
         Groups methods that are shared by buttons, menus, and
         key bind commands in a nested Class.
@@ -1172,7 +1172,7 @@ class SetupApp(ViewImage):
                 self.show_info_message(
                     'Settings have been reset to their defaults.\n'
                     'Check and adjust if needed.\n', color='blue')
-
+                self.process_prediction()
 
         return _Command
 
