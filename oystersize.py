@@ -1306,7 +1306,7 @@ class SetupApp(ViewImage):
             tips.add_command(label=_line, font=const.TIPS_FONT)
 
         menu['Help'].add_command(label='About',
-                                 command=utils.about_win)
+                                 command=utils.about_window)
 
     def start_now(self) -> None:
         """

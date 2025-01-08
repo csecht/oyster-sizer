@@ -1,7 +1,7 @@
 """
 General housekeeping utilities.
 Functions:
-about_win: a toplevel window for the Help>About menu selection.
+about_window: a toplevel window for the Help>About menu selection.
 check_platform - Exit if not Linux, Windows, or macOS.
 program_name - Get the program name for file paths and window titles.
 valid_path_to - Get correct path to program's files.
@@ -10,7 +10,7 @@ set_line_thickness - Set line thickness as function of screen width.
 save_report_and_img- Save files of result image and its report.
 display_report - Place a formatted text string into a specified Frame.
 count_sig_fig - Count number of significant figures in a number.
-box_centers_very_close - Evaluate nearness of bounding box centers.
+_box_centers_very_close - Evaluate nearness of bounding box centers.
 box_is_very_close_inarray - List boxes that are very close to another box.
 auto_text_contrast - Select text color based on average brightness.
 quit_gui -  Error-free and informative exit from the program.
@@ -41,7 +41,7 @@ if const.MY_OS == 'win':
     from ctypes import windll
 
 
-def about_win() -> None:
+def about_window() -> None:
     """
     Basic information about the package in scrolling text in a new
     Toplevel window.
@@ -86,8 +86,6 @@ def check_platform() -> None:
             windll.user32.SetProcessDPIAware()
         else:
             windll.shcore.SetProcessDpiAwareness(2)
-
-    # print('To quit, use Esc or Ctrl-Q. From the Terminal, use Ctrl-C.')
 
 
 def program_name() -> str:
@@ -305,7 +303,7 @@ def count_sig_fig(entry_number: Union[int, float, str]) -> int:
     return len(sigfig_str.lstrip('0'))
 
 
-def box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
+def _box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
     """
     Evaluate nearness of standard and oyster bounding boxes that are
     center-oriented, as in YOLO format: x-ctr, y-ctr, width, height.
@@ -344,11 +342,11 @@ def box_is_very_close_inarray(box: List[np.ndarray],
     Args: box: A single bounding box, in [[x y w h]] format.
           arr: A numpy array of bounding boxes, each in [x y w h] format.
           closeness: A passthrough value for the nearness threshold used
-          by box_centers_very_close().
+          by _box_centers_very_close().
     Returns: A list of strongly overlapping numpy array bounding boxes,
              in [x y w h] format.
     """
-    return [ary_box for ary_box in arr if box_centers_very_close(box,
+    return [ary_box for ary_box in arr if _box_centers_very_close(box,
                                                                  ary_box,
                                                                  closeness)]
 
@@ -385,9 +383,8 @@ def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple:
     # Range of 128-145 will give acceptable results, says author @NirDobovizki.
     _B, _G, _R = np.mean(center_area, axis=0).mean(axis=0)
     _pb = ((.068 * _B ** 2) + (.691 * _G ** 2) + (.241 * _R ** 2)) ** 0.5
-    if _pb > 145:
-        return const.COLORS_CV['black']
-    return const.COLORS_CV['white']
+
+    return const.COLORS_CV['white'] if _pb > 145 else const.COLORS_CV['black']
 
 
 def quit_gui(mainloop: tk.Tk, confirm=True) -> None:
@@ -470,7 +467,4 @@ def get_correction_factor(box_ratio_mean: float) -> float:
     # So, the linear equation is:
     # \[ y = 0.5x + 0.43 \]
 
-    if box_ratio_mean <= const.BOX_RATIO_THRESHOLD:
-        return 1.0
-
-    return 0.5 * box_ratio_mean + 0.43
+    return 1.0 if box_ratio_mean <= const.BOX_RATIO_THRESHOLD else 0.5 * box_ratio_mean + 0.43
