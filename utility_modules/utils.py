@@ -351,7 +351,7 @@ def box_is_very_close_inarray(box: List[np.ndarray],
                                                                  closeness)]
 
 
-def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple:
+def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple[int, int, int]:
     """
     Select text contrast, black or white, based on average brightness of
     the specified central area *center_pct*, as a percentage of an
@@ -368,21 +368,19 @@ def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple:
 
     # Center given percentage of the box for average color determination.
     center_factor = (1 - center_pct) / 2
-    top_row = int(box_area.shape[0] * center_factor)
-    bottom_row = int(box_area.shape[0] * (1 - center_factor))
-    left_column = int(box_area.shape[1] * center_factor)
-    right_column = int(box_area.shape[1] * (1 - center_factor))
-    center_area = box_area[top_row:bottom_row, left_column:right_column, :]
+    h, w = box_area.shape[:2]
+    center_area = box_area[int(h * center_factor):int(h * (1 - center_factor)),
+                           int(w * center_factor):int(w * (1 - center_factor))]
 
     # Calculate perceived brightness of the center area for contrast determination.
     # https://www.nbdtech.com /Blog/archive/2008/04/27/
     #   Calculating-the-Perceived-Brightness-of-a-Color.aspx
-    # Cutoff of perceived brightness, -pb, in range(128-145) to switch from
+    # Cutoff of perceived brightness, _pb, in range(128-145) to switch from
     #   black to white foreground will give acceptable visual contrast when
     #   background below that PB. 128 is the midpoint of 256, the max PB.
     # Range of 128-145 will give acceptable results, says author @NirDobovizki.
-    _B, _G, _R = np.mean(center_area, axis=0).mean(axis=0)
-    _pb = ((.068 * _B ** 2) + (.691 * _G ** 2) + (.241 * _R ** 2)) ** 0.5
+    _b, _g, _r = np.mean(center_area, axis=0).mean(axis=0)
+    _pb = (.068 * _b ** 2 + .691 * _g ** 2 + .241 * _r ** 2) ** 0.5
 
     return const.COLORS_CV['white'] if _pb < 145 else const.COLORS_CV['black']
 
