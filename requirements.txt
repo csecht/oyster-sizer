@@ -7,3 +7,4 @@ ultralytics==8.3.38
 # With a compatible Python version, the ultralytics package installs all necessary dependencies when none are present.
 #  Therefore it is recommended to make a fresh virtural environment and simply install ultralytics, i.e.:
 #  pip install ultralytics
+#  ultralytics installs (in the venv) these requirements: numpy, cv2, packaging, PIL, torch, plus other dependencies.
