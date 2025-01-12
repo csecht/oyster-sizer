@@ -536,7 +536,7 @@ class ViewImage(ProcessImage):
         return min(utils.count_sig_fig(self.entry['size_std_val'].get()),
                    utils.count_sig_fig(self.standards_mean_px_size))
 
-    def convert_bbox_data(self, bbox: np.ndarray, box_name: str) -> tuple:
+    def convert_bbox_data(self, bbox: np.ndarray) -> tuple:
         """
         Convert bounding box xywh to a xyxy format for drawing a cv2
         rectangle; measure object's size from its longest box dimension
@@ -547,8 +547,6 @@ class ViewImage(ProcessImage):
         Args:
              bbox: A numpy array for a single bounding box element, in
                    xywh centered-box format.
-             box_name: A string of the object's class name, either
-                     'standard' or 'oyster'.
         Returns: tuple of data converted to use in cv2.rectangle, as
             (x1, y1, x2, y2), and the object length, as text.
         """
@@ -617,11 +615,11 @@ class ViewImage(ProcessImage):
 
         # Draw the bounding box rectangle around the object.
         arr = cv2.rectangle(img=self.cvimg['sized'],
-                      pt1=point1,
-                      pt2=point2,
-                      color=color_selection,
-                      thickness=self.line_thickness,
-                      )
+                            pt1=point1,
+                            pt2=point2,
+                            color=color_selection,
+                            thickness=self.line_thickness,
+                            )
 
         # Use the given center percentage of the box area to determine
         #  the best text color contrast in the annotation area.
@@ -669,7 +667,7 @@ class ViewImage(ProcessImage):
         self.oyster_sizes.clear()
         def _display_objects(objects: np.ndarray, name: str) -> None:
             for bbox in objects:
-                x1, y1, x2, y2, display_size = self.convert_bbox_data(bbox, name)
+                x1, y1, x2, y2, display_size = self.convert_bbox_data(bbox)
                 if name == 'oyster':
                     oyster_size = display_size.rstrip('px')
                     self.oyster_sizes.append(float(oyster_size))
