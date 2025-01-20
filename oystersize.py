@@ -826,7 +826,7 @@ class ViewImage(ProcessImage):
             f'{"# oysters:".ljust(space)}{num_oysters}\n'
             f'{"# standards:".ljust(space)}{num_std_objects}\n'
             f'{"Entered standard size:".ljust(space)}diameter = {size_std_dia}\n'
-            f'{"Avg. standard size used:".ljust(space)}{avg_std_size}\n'
+            f'{"Avg. standard size used:".ljust(space)}{avg_std_size} ({sig_fig} sig. fig. used)\n'
             f'{"Oyster sizes:".ljust(space)}average = {mean_oyster_size},'
             f' median = {median_oyster_txt},\n'
             f'{tab}range = {size_range} (uncorrected)'
@@ -1820,7 +1820,7 @@ def main() -> None:
     #  without the delay of waiting for tk event actions.
     # Source: https://stackoverflow.com/questions/39840815/
     #   exiting-a-tkinter-app-with-ctrl-c-and-catching-sigint
-    # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
+    # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C (2).
     # Comment out the following statements before mainloop() when using PyInstaller.
     signal(signalnum=SIGINT,
            handler=lambda x, y: utils.quit_gui(mainloop=app, confirm=False),

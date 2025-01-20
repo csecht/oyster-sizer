@@ -108,7 +108,7 @@ STUB_ARRAY: np.ndarray = cv2.rectangle(np.zeros(shape=(200, 200), dtype="uint8")
 FONT_SCALE_FACTOR: float = 5.5e-4
 LINE_THICKNESS_FACTOR: float = 1.5e-3
 
-# Use for cv2.addWeighted transparent text box.
+# Use for cv2.addWeighted text box transparency.
 ALPHA = 0.5
 
 # Colorblind color pallet source:
@@ -151,8 +151,8 @@ COLORS_TK = {
     'black': 'black',
     'white': 'white',
     'tk_white': {'dar': 'white', 'lin': 'grey85'}.get(MY_OS, 'grey95'),
-    'red': 'red1',  # not compatible for good color-blindcontrast
-    'green': 'green1',  # not compatible for good color-blind contrast
+    'red': 'red1',  # not compatible for good color-blind contrast with other colors listed
+    'green': 'green1',  # not compatible for good color-blind contrast with other colors listed
 }
 
 # https://vovkos.github.io/doxyrest-showcase/opencv/sphinx_rtd_theme/enum_cv_HersheyFonts.html
