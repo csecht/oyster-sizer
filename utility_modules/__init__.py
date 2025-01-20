@@ -4,7 +4,7 @@ These dunders and constants are used with the --about command line argument.
 
 # Development status standards: https://pypi.org/classifiers/
 __author__ = 'Craig S. Echt'
-__version__: str = '0.0.7'
+__version__: str = '0.0.8'
 __status__ = 'Development Status :: 3 - Alpha'
 __copyright__ = 'Copyright (C) 2025 C.S. Echt, under GNU General Public License'
 __license__ = """
