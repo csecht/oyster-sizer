@@ -303,7 +303,10 @@ def count_sig_fig(entry_number: Union[int, float, str]) -> int:
     return len(sigfig_str.lstrip('0'))
 
 
-def _box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
+def _box_centers_very_close(box_a: list,
+                            box_b: list,
+                            closeness: float,
+                            ) -> bool:
     """
     Evaluate nearness of standard and oyster bounding boxes that are
     center-oriented, as in YOLO format: x-ctr, y-ctr, width, height.
@@ -330,11 +333,12 @@ def _box_centers_very_close(box_a: list, box_b: list, closeness: float) -> bool:
 
 def box_is_very_close_inarray(box: List[np.ndarray],
                               arr: np.ndarray,
-                              closeness: float) -> List[np.ndarray]:
+                              closeness: float,
+                              ) -> List[np.ndarray]:
     """
-    Return a list of boxes from the *box* numpy array that are very clos
+    Return a list of boxes from the *box* numpy array that are very close
     to any element in the *arr* array of bounding boxes nearness. When
-    used with the box_centers_very_close() method and called from a
+    used with the _box_centers_very_close() function and called from a
     statement that evaluates the negative of being very close, this can
     be an effective filter to obtain well-separated objects of different
     YOLO classes.
@@ -346,9 +350,9 @@ def box_is_very_close_inarray(box: List[np.ndarray],
     Returns: A list of strongly overlapping numpy array bounding boxes,
              in [x y w h] format.
     """
-    return [ary_box for ary_box in arr if _box_centers_very_close(box,
-                                                                 ary_box,
-                                                                 closeness)]
+    return [ary_box for ary_box in arr if _box_centers_very_close(box_a=box,
+                                                                  box_b=ary_box,
+                                                                  closeness=closeness,)]
 
 
 def auto_text_contrast(box_area: np.ndarray, center_pct: float) -> tuple[int, int, int]:
@@ -435,7 +439,7 @@ def no_objects_found_msg(caller: str) -> None:
                            'Or try a different image with oysters farther from edges.\n',
         'oyster_objects': 'No oysters were recognized.\n'
                           'Try changing the confidence threshold.\n'
-                          'Or try a different image.\n\n'
+                          'Or try a different image.\n\n',
     }
     messagebox.showinfo(detail=caller_messages.get(caller, 'No objects found: reason unknown.'))
 

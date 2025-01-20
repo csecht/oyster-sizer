@@ -264,13 +264,7 @@ class ViewImage(ProcessImage):
         Returns: None
         """
         self.info_txt.set(info)
-
-        try:
-            tk_color = const.COLORS_TK[color]
-        except KeyError:
-            tk_color = color
-
-        self.info_label.config(fg=tk_color)
+        self.info_label.config(fg=const.COLORS_TK.get(color, color))
 
     def widget_control(self, action: str) -> None:
         """
@@ -315,7 +309,7 @@ class ViewImage(ProcessImage):
         #  response.
         self.update()
 
-    def update_image(self, name: str) -> None:
+    def update_image(self, img_name: str) -> None:
         """
         Process a cv2 image array to use as a tk PhotoImage and update
         (configure) its window label for immediate display, at scale.
@@ -323,18 +317,19 @@ class ViewImage(ProcessImage):
         display an image.
 
         Args:
-            name: An item name used in the image_name tuple, for
+            img_name: An item name used in the image_name tuple, for
                 use as key in tkimg, cvimg, and img_label dictionaries.
 
         Returns:
             None
         """
 
-        self.tkimg[name] = manage.tk_image(
-            image=self.cvimg[name],
+        self.tkimg[img_name] = manage.tk_image(
+            image=self.cvimg[img_name],
             scale_factor=self.scale_factor.get()
         )
-        self.img_label[name].configure(image=self.tkimg[name])
+
+        self.img_label[img_name].configure(image=self.tkimg[img_name])
 
     def is_interior(self, xywh_bbox) -> bool:
         """
@@ -411,22 +406,24 @@ class ViewImage(ProcessImage):
         """
         # Note: may need to adjust closeness threshold tolerance of
         #   utils.centered_boxes_very_close(); 0.1 is a good starting point.
-        # This vectorized approach may not be faster than using list expressions,
-        #  but, when properly named, it is more readable and maintainable.
-        #  And it is a good example of using numpy array indexing.
-
         are_not_close_to_standards = np.array(
             [not utils.box_is_very_close_inarray(box, self.interior_standards, 0.1)
              for box in self.interior_oysters]
         )
+
         are_not_close_to_oysters = np.array(
             [not utils.box_is_very_close_inarray(box, self.interior_oysters,0.1)
              for box in self.interior_standards]
         )
+
+        # This vectorized approach may not be faster than using list expressions,
+        #  but, when properly named, it is more readable and maintainable.
+        #  And it is a good example of using numpy array indexing.
         self.true_pos_standards = (
             self.interior_standards[are_not_close_to_oysters]
             if are_not_close_to_oysters.size else np.array([])
         )
+
         self.true_pos_oysters = (
             self.interior_oysters[are_not_close_to_standards]
             if are_not_close_to_standards.size else np.array([])
@@ -691,6 +688,11 @@ class ViewImage(ProcessImage):
         Calls get_text_position_offsets(), to_precision(), update_image().
         Returns: None
         """
+
+        # Call display_all_objects() to ensure that the inserted text box
+        #  is redrawn from the original image, not from the last annotated.
+        #  This prevents the alpha overlay from being applied multiple times.
+        self.display_all_objects()
 
         _sf: int = self.get_sig_fig()
         _cf: float = utils.get_correction_factor(self.bbox_ratio_mean)
@@ -1014,7 +1016,7 @@ class SetupApp(ViewImage):
                 color='black')
 
             for _title in const.WINDOW_TITLES:
-                self.update_image(name=_title)
+                self.update_image(img_name=_title)
 
 
         class _Command:
@@ -1069,7 +1071,7 @@ class SetupApp(ViewImage):
 
                 if self.open_input(parent=self.master):
                     self.set_auto_scale_factor()
-                    self.update_image(name='input')
+                    self.update_image(img_name='input')
                 else:  # User canceled input selection or closed messagebox window.
                     self.show_info_message(
                         'No new input file was selected.\n\n',
@@ -1469,7 +1471,7 @@ class SetupApp(ViewImage):
             _toplevel.rowconfigure(index=0, weight=1)
             _toplevel.title(const.WINDOW_TITLES[_title])
             _toplevel.config(**const.WINDOW_PARAMETERS)
-            self.update_image(name=_title)
+            self.update_image(img_name=_title)
             if _title == 'sized':
                 _toplevel.withdraw()
 
@@ -1525,22 +1527,26 @@ class SetupApp(ViewImage):
         # Configure all items in the dictionary of ttk buttons.
         button_params = dict(
             width=0,
-            style='My.TButton')
+            style='My.TButton',
+        )
 
         self.button['update'].config(
             text='Process or Update',
             command=self.process_prediction,
-            **button_params)
+            **button_params,
+        )
 
         self.button['save_results'].config(
             text='Save results',
             command=self.call_cmd().save_results,
-            **button_params)
+            **button_params,
+        )
 
         self.button['new_input'].config(
             text='New input',
             command=self.call_cmd().new_input,
-            **button_params)
+            **button_params,
+        )
 
     def config_entries(self) -> None:
         """
@@ -1578,12 +1584,14 @@ class SetupApp(ViewImage):
         scale_len = int(self.screen_width * 0.20)
 
         self.slider['confidence_lbl'].configure(text='Confidence level, %:\n',
-                                                **const.LABEL_PARAMETERS)
+                                                **const.LABEL_PARAMETERS,
+                                                )
         self.slider['confidence'].configure(from_=50, to=100,
                                             tickinterval=5,
                                             length=scale_len,
                                             variable=self.confidence_slide_val,
-                                            **const.SCALE_PARAMETERS)
+                                            **const.SCALE_PARAMETERS,
+                                            )
         # To avoid processing all the intermediate values between normal
         #  slider movements, bind slider to call function only on
         #  left button release.
@@ -1689,11 +1697,14 @@ class SetupApp(ViewImage):
         west_grid_params = dict(
             padx=5,
             pady=(0, 5),
-            sticky=tk.W)
+            sticky=tk.W,
+        )
+
         button_grid_params = dict(
             padx=10,
             pady=(0, 2),
-            sticky=tk.W)
+            sticky=tk.W,
+        )
 
         # info_label widget is in the main window (self).
         # Note: rowspan=3 works well with the  3-4 return characters
@@ -1703,12 +1714,14 @@ class SetupApp(ViewImage):
         #  Sticky is 'east' to prevent horizontal shifting when, during
         #  processing, all buttons in col 0 are removed.
         self.info_label.grid(column=1, row=2, rowspan=3, columnspan=2,
-                             padx=(0, 5), sticky=tk.E)
+                             padx=(0, 5), sticky=tk.E,
+                             )
 
         # Widgets gridded in the self.selectors_frame Frame.
         # Sorted by row number
         self.slider['confidence_lbl'].grid(column=0, row=0,
-                                           padx=(5, 10), pady=(10, 5), sticky=tk.W)
+                                           padx=(5, 10), pady=(10, 5), sticky=tk.W,
+                                           )
 
         self.entry['size_std_lbl'].grid(column=0, row=1, **west_grid_params)
         self.entry['size_std_lbl2'].grid(column=1, row=1, **west_grid_params)
@@ -1728,8 +1741,9 @@ class SetupApp(ViewImage):
         std_padx = (self.entry['size_std_lbl'].winfo_reqwidth() + 10, 0)
 
         self.slider['confidence'].grid(column=0, row=0, padx=conf_padx,
-                                       columnspan=2, sticky=tk.EW)
-        self.entry['size_entry'].grid(column=0, row=1, padx=std_padx)
+                                       columnspan=2, sticky=tk.EW,
+                                       )
+        self.entry['size_entry'].grid(column=0, row=1, padx=std_padx,)
 
     def grid_img_labels(self) -> None:
         """
@@ -1751,8 +1765,8 @@ class SetupApp(ViewImage):
         """
 
         # Display the input image. It is changed with call_cmd().new_input().
-        self.update_image(name='input')
-        self.update_image(name='sized')
+        self.update_image(img_name='input')
+        self.update_image(img_name='sized')
 
         # Now is time to show the sized objects window that was hidden
         #  in setup_image_windows(). Update() speeds up its display.
@@ -1809,7 +1823,8 @@ def main() -> None:
     # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
     # Comment out the following statements before mainloop() when using PyInstaller.
     signal(signalnum=SIGINT,
-           handler=lambda x, y: utils.quit_gui(mainloop=app, confirm=False))
+           handler=lambda x, y: utils.quit_gui(mainloop=app, confirm=False),
+           )
 
     def tk_check(msec):
         app.after(msec, tk_check, msec)

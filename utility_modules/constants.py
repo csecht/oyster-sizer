@@ -91,7 +91,7 @@ correction_factors = {
     1.33: 1.095,
     1.34: 1.10,
     1.35: 1.105,
-    1.36: 1.11
+    1.36: 1.11,
 }
 
 TIME_STAMP_FORMAT = '%Y%m%d%I%M%S'  # for file names, as: 20240301095308
@@ -181,10 +181,10 @@ OS_SETTINGS = {
             'fg': COLORS_TK['yellow'],
             'activebackground': 'gray50',
             'activeforeground': COLORS_TK['sky blue'],
-            'selectcolor': COLORS_TK['dark blue']
+            'selectcolor': COLORS_TK['dark blue'],
         },
         'c_key': 'Ctrl',
-        'c_bind': 'Control'
+        'c_bind': 'Control',
     },
     'win': {
         'os_font': 'Segoe UI',
@@ -195,7 +195,7 @@ OS_SETTINGS = {
         'tips_font_size': (8,),
         'radio_params': {'fg': 'black'},
         'c_key': 'Ctrl',
-        'c_bind': 'Control'
+        'c_bind': 'Control',
     },
     'dar': {
         'os_font': 'SF Pro',
@@ -206,7 +206,7 @@ OS_SETTINGS = {
         'tips_font_size': (11,),
         'radio_params': {'fg': 'black'},
         'c_key': 'Command',
-        'c_bind': 'Command'
+        'c_bind': 'Command',
     }
 }
 
@@ -251,17 +251,21 @@ WINDOW_PARAMETERS = dict(
     highlightthickness=5,
     highlightcolor=COLORS_TK['yellow'],
     highlightbackground=DRAG_GRAY,
-    padx=3, pady=3, )
+    padx=3, pady=3,
+)
 
 # Grid arguments to position tk.Label images in their windows.
 PANEL_LEFT = dict(
     column=0, row=0,
     padx=5, pady=5,
-    sticky='w')
+    sticky='w',
+)
+
 PANEL_RIGHT = dict(
     column=1, row=0,
     padx=5, pady=5,
-    sticky='e')
+    sticky='e',
+)
 
 # Item order determines initial window layer order, first on top.
 WINDOW_TITLES = {
