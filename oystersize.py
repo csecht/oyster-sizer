@@ -120,6 +120,8 @@ class ProcessImage(tk.Tk):
 
         # self.cvimg['input'] defined in open_input() from self.input_file_path
         #  via cv2.imread() of filedialog.askopenfilename().
+        # Use a copy of input image to avoid overwriting the original.
+        #  The original is displayed as the 'sized' image when no obj are found.
         results = model.predict(
             source=self.cvimg['input'].copy(),
             imgsz=const.PREDICT_IMGSZ,
@@ -135,6 +137,7 @@ class ProcessImage(tk.Tk):
         box_data = results[0].boxes
         self.predicted_boxes = box_data.xywh.numpy(force=True).astype(int)
         self.predicted_class_distribution = box_data.cls.numpy(force=True).astype(int)
+        results.clear()  # Clear the results tensor to free memory. Useful?
 
 
 class ViewImage(ProcessImage):
@@ -717,13 +720,14 @@ class ViewImage(ProcessImage):
         x_offset, y_offset = self.get_text_position_offsets(longest_line)
         textbox_px_width = round(x_offset * 2.2)
         img_height = self.cvimg['input'].shape[1]
+        ht_coefficient = 11  # Used for rectangle height and line spacing.
 
         # Template for transparent white text box:
         #  https://pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
         overlay = self.cvimg['sized'].copy()
         cv2.rectangle(img=overlay,
                       pt1=(5, 5),
-                      pt2=(textbox_px_width, img_height // 12),
+                      pt2=(textbox_px_width, img_height // ht_coefficient),
                       color=const.COLORS_CV['white'],
                       thickness=cv2.FILLED,
         )
@@ -738,7 +742,7 @@ class ViewImage(ProcessImage):
         # Need to put one line at a time to avoid overlapping text.
         # org: bottom-left corner of the text annotation.
         for i, line in enumerate(display_metrics.split('\n'), start=1):
-            _y = i * img_height // 50 + y_offset
+            _y = i * img_height // (ht_coefficient * 4) + y_offset
             cv2.putText(img=self.cvimg['sized'],
                         org=(10, round(_y)),  # add 5 to the x indent of cv2.rectangle pt1.
                         text=line,
@@ -811,9 +815,9 @@ class ViewImage(ProcessImage):
 
         # Text is formatted for clarity in window, terminal, and saved file.
         # Divider symbol is Box Drawings Double Horizontal from https://coolsymbol.com/
-        # Divider's unicode_escape: u'\u2550\' or u'\u2550'
-        # Report oyster mean and median size corrected for box ratio mean,
-        #  but report range as uncorrected to match the image display.
+        # Divider's unicode_escape: u'\u2550\'.
+        # Report oyster mean and median size as corrected for box ratio mean,
+        #  but report range as uncorrected to match object annotations in image.
         space = 26
         tab = " " * space
         divider = "═" * 20
@@ -843,10 +847,10 @@ class ViewImage(ProcessImage):
         Calls show_info_message(), get_standard_sizes().
         """
 
-        # Elements are in order of condition priority.
-        #  The first true condition will break the loop and be the one
-        #  displayed in the info_label. The color for message text in
-        #  show_info_message() is the second element of the message tuple.
+        # Elements are in order of condition priority. Use tuple instead of dict
+        #  to ensure order of processing. The first true condition will break
+        #  the loop and be the one displayed in the info_label. The color for
+        #  message text in_info_message() is the second element of the message tuple.
         processing_info_messages = (
             (self.true_pos_standards.size and (self.get_standard_sizes()).std() > 10, (
                 'Detected standards (purple box) are different sizes.\n'
@@ -1321,7 +1325,7 @@ class SetupApp(ViewImage):
         #  as expected with a visually clean start.
         # For proper menu functions, setup_main_menu() must be called
         #  after setup_main_window() and setup_main_window() must be
-        #  called first.
+        #  called first (after any housekeeping functions).
         # process_prediction() is inherited from ViewImage(), others
         #  are methods of SetupApp().
         utils.set_icon(self)
