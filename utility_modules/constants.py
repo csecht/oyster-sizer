@@ -49,7 +49,7 @@ import numpy as np
 MY_OS: str = platform[:3]  # 'lin', 'win', or 'dar'
 
 # The YOLO model and Ultralytics prediction() function arguments.
-MODEL_NAME = 'oyster_yolo11n_960_103e_20b'
+MODEL_NAME = 'oyster3_yolo11n_960_110e_20b'  # 'oyster_yolo11n_960_103e_20b',
 PREDICT_IMGSZ = 960  # set to match model training size, default 640. Must be multiple of max stride 32.
 PREDICT_IOU = 0.70  # intersection-over-union threshold, default 0.70
 PREDICT_MAX_DET = 400  # maximum detections per image, default 300
