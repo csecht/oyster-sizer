@@ -609,9 +609,9 @@ class ViewImage(ProcessImage):
         if object_name == 'standard':
             color_selection = const.COLORS_CV['DarkOrchid1']
 
-        # Use letter 'O' for oyster annotation instead of its measured size.
+        # Use  'Cv' for oyster annotation instead of its measured size.
         # if object_name == 'oyster':
-        #     object_size = 'O'
+        #     object_size = 'Cv'
 
         # Draw the bounding box rectangle around the object.
         arr = cv2.rectangle(img=self.cvimg['sized'],
@@ -1687,7 +1687,8 @@ class SetupApp(ViewImage):
 
         self.color_val.set('gold1')
         self.entry['size_std_val'].set('1')
-        self.confidence_slide_val.set(80)  # 0.80 confidence was used for training.
+        # 0.70 best for oyster_tune233_125e_20b. 0.80 for oyster_yolo11n_960_103e_20b.
+        self.confidence_slide_val.set(70)
 
     def grid_widgets(self) -> None:
         """
