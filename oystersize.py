@@ -712,8 +712,8 @@ class ViewImage(ProcessImage):
 
         display_metrics = (
             f'Image: {self.input_file_name}\n'
-            f'Avg Size: {mean_oyster_size}\n'
             f'Counted: {len(self.oyster_sizes)}\n'
+            f'Avg Size: {mean_oyster_size}\n'
         )
 
         longest_line: str = max(display_metrics.split('\n'), key=len)
@@ -807,9 +807,20 @@ class ViewImage(ProcessImage):
             median_oyster_txt = (f'{median_oyster_size} (corrected: {"+" if _cf > 1.0 else ""}'
                                      f'{round((_cf - 1) * 100, 1)}%)')
             size_range: str = f'{smallest}--{biggest}'
-        elif not self.interior_standards.size:
-            mean_oyster_size = median_oyster_txt = size_range = 'n/a'
-            avg_std_size = 'n/a'
+        elif not self.interior_standards.size and self.entry['size_std_val'].get() != '1':
+            mean_oyster_size = median_oyster_txt = size_range = avg_std_size = 'n/a'
+
+        # Oysters found, but no standards found and size std is '1', calculate for pixels.
+        elif not self.interior_standards.size and self.entry['size_std_val'].get() == '1':
+            mean_size = mean(self.oyster_sizes)
+            median_size = median(self.oyster_sizes)
+            mean_oyster_size = str(int(mean_size))
+            median_oyster_size = str(int(median_size))
+            smallest = str(int(min(self.oyster_sizes)))
+            biggest = str(int(max(self.oyster_sizes)))
+            median_oyster_txt = f'{median_oyster_size} (pixels)'
+            size_range = f'{smallest}--{biggest}'
+
         else:  # standards found, but no oysters found.
             mean_oyster_size = median_oyster_txt = size_range = 'n/a'
 
