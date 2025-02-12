@@ -108,13 +108,17 @@ class ProcessImage(tk.Tk):
         """
 
         # Initialize model
+        #  The pytorch best.pt model is quite fast using a CPU for prediction.
+        #   While the ONNX best.onnx model is faster, the perceived difference is
+        #   not noticeable in most cases.
         model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.pt")
-        model = YOLO(model_to_use)
+        # model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.onnx")
+        model = YOLO(model_to_use, task='detect')
 
         # Run inference, on CPU if no GPU available.
-        available_device = ('mps' if MY_OS == 'dar' and mps.is_available()
-                            else device('cuda' if cuda.is_available() else 'cpu')
-                            )
+        # available_device = ('mps' if MY_OS == 'dar' and mps.is_available()
+        #                     else device('cuda' if cuda.is_available() else 'cpu')
+        #                     )
 
         confidence: float = self.confidence_slide_val.get() / 100
 
@@ -122,14 +126,17 @@ class ProcessImage(tk.Tk):
         #  via cv2.imread() of filedialog.askopenfilename().
         # Use a copy of input image to avoid overwriting the original.
         #  The original is displayed as the 'sized' image when no obj are found.
-        results = model.predict(
+        # Use 'cpu' device for onnx model. cpu also works well for pytorch and coreml.
+        # half=True does not work for onnx model or on macOS, is slower for pt model.
+        results =  model.predict(
             source=self.cvimg['input'].copy(),
             imgsz=const.PREDICT_IMGSZ,
             conf=confidence,
-            device=available_device,
+            device='cpu',
             iou=const.PREDICT_IOU,
             max_det=const.PREDICT_MAX_DET,
-            half=const.PREDICT_HALF,
+            half=False,
+            augment=False,
             verbose=False,
         )
 

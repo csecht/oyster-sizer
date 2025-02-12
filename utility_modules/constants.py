@@ -58,9 +58,6 @@ MODEL_NAME = 'oyster_yolo11_tuned'
 PREDICT_IMGSZ = 960  # set to match model training size, default 640. Must be multiple of max stride 32.
 PREDICT_IOU = 0.70  # intersection-over-union threshold, default 0.70
 PREDICT_MAX_DET = 400  # maximum detections per image, default 300
-# When possible, use half precision to speed prediction; default False.
-PREDICT_HALF = False if MY_OS == 'dar' else True
-PREDICT_AUGMENT = False  # augment images for prediction, default False
 
 # Minimum px distance between "interior" object and img edge.
 EDGE_PROXIMITY = 3
