@@ -49,12 +49,12 @@ import numpy as np
 MY_OS: str = platform[:3]  # 'lin', 'win', or 'dar'
 
 # The YOLO model and Ultralytics prediction() function arguments.
-# Model oyster_tune233_125e_20b is the best as of 8 Feb, 2025.
+# Model oyster_yolo11_tuned (a.k.a. oyster_tune233_125e_20b) is the best as of 8 Feb, 2025.
 #  It used hyperparameters from a prior tuning run to train the
 #  pretrained original oyster_yolo11n_960_103e_20b model. It works best
 #  with the default confidence set to 0.7 instead of 0.8 used for the
 #  original model.
-MODEL_NAME = 'oyster_tune233_125e_20b' #'oyster3_yolo11n_960_110e_20b'  #'oyster_yolo11n_960_103e_20b'
+MODEL_NAME = 'oyster_yolo11_tuned'
 PREDICT_IMGSZ = 960  # set to match model training size, default 640. Must be multiple of max stride 32.
 PREDICT_IOU = 0.70  # intersection-over-union threshold, default 0.70
 PREDICT_MAX_DET = 400  # maximum detections per image, default 300
