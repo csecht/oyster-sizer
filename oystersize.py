@@ -788,11 +788,13 @@ class ViewImage(ProcessImage):
         # Work up some summary metrics with correct number of sig. fig.
         #  and estimated corrected oyster size metrics.
         # When displaying sizes as pixels, don't apply sig. fig.
-        # if self.oyster_sizes and num_oysters > 0 and self.interior_standards.size:
         if self.oyster_sizes and self.interior_standards.size:
             _cf: float = utils.get_correction_factor(self.bbox_ratio_mean)
-            mean_size: float = mean(self.oyster_sizes) * _cf if _cf > 1.0 else self.oyster_sizes[0]
-            median_size: float = median(self.oyster_sizes) * _cf if num_oysters > 1 else self.oyster_sizes[0]
+            if num_oysters > 1:
+                mean_size: float = mean(self.oyster_sizes) * _cf
+                median_size: float = median(self.oyster_sizes) * _cf
+            else: # there is only 1 oyster, no stats needed.
+                mean_size = median_size = self.oyster_sizes[0] * _cf
             if self.entry['size_std_val'].get() == '1':
                 mean_oyster_size = str(int(mean_size))
                 median_oyster_size = str(int(median_size))
