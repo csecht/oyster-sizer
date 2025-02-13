@@ -113,6 +113,8 @@ class ProcessImage(tk.Tk):
         #   not noticeable in most cases.
         model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.pt")
         # model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.onnx")
+        # model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.mlpackage")
+
         model = YOLO(model_to_use, task='detect')
 
         # Run inference, on CPU if no GPU available.
@@ -127,7 +129,7 @@ class ProcessImage(tk.Tk):
         # Use a copy of input image to avoid overwriting the original.
         #  The original is displayed as the 'sized' image when no obj are found.
         # Use 'cpu' device for onnx model. cpu also works well for pytorch and coreml.
-        # half=True does not work for onnx model or on macOS, is slower for pt model.
+        # half=True does not work for onnx model or on macOS and is slower for pt model.
         results =  model.predict(
             source=self.cvimg['input'].copy(),
             imgsz=const.PREDICT_IMGSZ,
