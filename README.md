@@ -104,7 +104,7 @@ Sizing is based on the longest side of an object's bounding box. When more matur
 For macOS, if an expected window does not appear, or the startup appears stalled, you may just need to click the Python Launcher icon in the Dock to make windows visible. This is a known issue with tkinter on macOS. See: https://www.python.org/download/mac/tcltk/
 
 ### Attributions
-The yolov8_ultralytics object detection package is from:
+The yolov11_ultralytics object detection package is from:
 
 Glenn Jocher and Jing Qiu, 2024, Ultralytics YOLO11,
 https://github.com/ultralytics/ultralytics, orcid 0000-0001-5950-6979, 0000-0002-7603-6750, 0000-0003-3783-7069, license AGPL-3.0.
@@ -114,6 +114,7 @@ https://github.com/BebeSparkelSparkel/to-precision/releases/tag/0.0.0
 It was edited to match this project's coding style.
 
 All photo images are from the author, C.S. Echt.
+Image datasets used for training and validation were uploaded to HuggingFace https://huggingface.co/datasets/csecht/aquaculture_oysters on 15 February 2025.
 
 ### Example size standards.
 Enter the millimeter diameter value in the Size standard entry field. The standard's size is then used to convert pixels to millimeters for all objects in the image. Sizes are reported using appropriate significant figures, as limited by the entered standard's significant figures or the pixel size of the standard, whichever is less. 
