@@ -114,7 +114,7 @@ https://github.com/BebeSparkelSparkel/to-precision/releases/tag/0.0.0
 It was edited to match this project's coding style.
 
 All photo images are from the author, C.S. Echt.
-Image datasets used for training and validation were uploaded to HuggingFace https://huggingface.co/datasets/csecht/aquaculture_oysters on 15 February 2025.
+Image datasets used for training and validation were uploaded to HuggingFace https://huggingface.co/datasets/csecht/aquaculture_oysters on 15 February 2025. Synthetic disk training images in that dataset were created with the Python repository at: https://github.com/csecht/synthesize-disks.
 
 ### Example size standards.
 Enter the millimeter diameter value in the Size standard entry field. The standard's size is then used to convert pixels to millimeters for all objects in the image. Sizes are reported using appropriate significant figures, as limited by the entered standard's significant figures or the pixel size of the standard, whichever is less. 
