@@ -92,7 +92,7 @@ If several identical size standard disks are placed at various positions across 
 ### Tips:
 * For best results, use a high-resolution image with reasonably contrasted  background. Oysters and standards should not be piled up. Touching and slightly overlapping oysters are fine, but should not overlap any standard. The shot should be straight down, not at an angle. Training of the YOLO model for oyster detection was mainly with images in a 4 x 3 aspect ratio (4032 × 3024 pixels), so images with similar aspect and resolution should give best results.
 * The most accurate sizing is when one size standard is placed near the center of the image and another somewhere in a corner quadrant. Standards should be close to the sizes of the oysters being measured.
-* Size standards should have a pixel diameter at least 4% of the image width or height. Smaller standards may not be detected, even after adjusting the confidence level.
+* Size standards should have a pixel diameter at least 4% and greater than 15% of the image width or height. Smaller or larger standards may not be detected, even after adjusting the confidence level.
 * The maximum number of detected objects is 400. If more are detected, the program will display a warning and only the first 400 will be analysed.
 * Generally, more detected oysters lead to more accurate results, but it is not necessary to detect every single oyster to obtain usable population metrics. Camera distance, cropping, and standards placement can affect detection and size estimates, so experiment with these variables to find what works best for your setup.
 * A summary of results is inset in the top left corner of the "Sized Objects" image. It will toggle off when changing annotation Styles, but can be toggled on with the Ctrl-I key (Command-I on macOS) or from the View pull-down menu.
@@ -100,6 +100,8 @@ If several identical size standard disks are placed at various positions across 
 
 ### Known Issues:
 Sizing is based on the longest side of an object's bounding box. When more mature (oblong) oysters are oriented on the diagonal, assuming random orientation in the sample, 'longest side' size estimates will be underestimated for the sample population. To compensate, the program calculates a correction factor, based on mean ratio of box dimensions, to provide corrected mean and median estimates to within 4% of actual. A better solution is being sought, perhaps by using a rotated bounding box model.
+
+Currently, for a size standard disk to be detected, it's relative size should be greater than ~4% and less than ~15% of the image's height or width.
 
 For macOS, if an expected window does not appear, or the startup appears stalled, you may just need to click the Python Launcher icon in the Dock to make windows visible. This is a known issue with tkinter on macOS. See: https://www.python.org/download/mac/tcltk/
 
