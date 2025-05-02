@@ -17,7 +17,7 @@ quit_gui -  Error-free and informative exit from the program.
 no_objects_found - A simple messagebox when a contour pointset is empty.
 get_correction_factor - Calculate the correction factor using a linear equation.
 """
-# Copyright (C) 2022-2024 C.S. Echt, under GNU General Public License'
+# Copyright (C) 2022-2024 C.S. Echt, under MIT License
 
 # Standard library imports.
 import platform
@@ -56,7 +56,7 @@ def about_window() -> None:
     aboutwin.minsize(width=400, height=200)
     aboutwin.focus_set()
     abouttext = ScrolledText(master=aboutwin,
-                             width=62,
+                             width=72,
                              bg=const.MASTER_BG,  # light gray
                              relief='groove',
                              borderwidth=8,

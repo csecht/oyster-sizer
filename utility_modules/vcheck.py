@@ -5,7 +5,7 @@ Functions:
 minversion() - Exit program if not minimum required version.
 maxversion() - Notify if running a newer than tested version.
 """
-# Copyright (C) 2021-2023 C. Echt under GNU General Public License'
+# Copyright (C) 2021-2023 C. Echt under MIT License
 
 from packaging import version
 from sys import version_info, exit as sys_exit

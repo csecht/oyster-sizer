@@ -37,7 +37,7 @@ PANEL_LEFT
 PANEL_RIGHT
 WINDOW_TITLES
 """
-# Copyright (C) 2024 C.S. Echt, under GNU General Public License'
+# Copyright (C) 2024 C.S. Echt, under MIT License
 
 # Standard library import
 from sys import platform

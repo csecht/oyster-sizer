@@ -7,12 +7,11 @@ scale: manages the specified scale factor for display of images.
 tk_image: converts scaled cv2 image to a compatible tk.TK image format.
 ttk_styles: configures platform-specific ttk.Style for Buttons and Comboboxes.
 """
-# Copyright (C) 2024 C.S. Echt, under GNU General Public License
+# Copyright (C) 2024 C.S. Echt, under MIT License
 
 # Standard library imports.
 import argparse
 import tkinter as tk
-from sys import exit as sys_exit
 from tkinter import ttk
 
 # Third party imports.
@@ -58,7 +57,7 @@ def arguments() -> dict:
         print('====================== ABOUT START ====================')
         print(about_text)
         print('====================== ABOUT END ====================')
-        sys_exit(0)
+        sys.exit(0)
 
     # The 'about' key is called from setup_start_window() Help menu.
     #  The 'terminal' key is called from utils.save_report_and_img().
