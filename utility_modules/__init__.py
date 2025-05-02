@@ -6,7 +6,7 @@ These dunders and constants are used with the --about command line argument.
 __author__ = 'Craig S. Echt'
 __version__: str = '0.0.13'
 __status__ = 'Development Status :: 3 - Alpha'
-__copyright__ = 'Copyright (C) 2025 C.S. Echt, under GNU General Public License'
+__copyright__ = 'Copyright (C) 2025 C.S. Echt, under MIT License'
 __license__ = """
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
