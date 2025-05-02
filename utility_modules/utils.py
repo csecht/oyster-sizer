@@ -152,7 +152,7 @@ def set_line_thickness(mainloop: tk.Tk,) -> int:
     Returns:
         Line thickness as an integer.
     """
-    return max(round(mainloop.winfo_screenwidth() * const.LINE_THICKNESS_FACTOR), 1)
+    return max(1, int(mainloop.winfo_screenwidth() * const.LINE_THICKNESS_FACTOR))
 
 
 def save_report_and_img(path2folder: str,
