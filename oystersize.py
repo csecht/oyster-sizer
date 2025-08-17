@@ -245,6 +245,7 @@ class ViewImage(ProcessImage):
         self.bbox_ratio_mean: float = 0
         self.oyster_sizes: List[float] = []
         self.report_txt: str = ''
+        self.size_to_display: str = ''
 
     def set_auto_scale_factor(self) -> None:
         """
@@ -706,23 +707,10 @@ class ViewImage(ProcessImage):
         #  This prevents the alpha overlay from being applied multiple times.
         self.display_all_objects()
 
-        _sf: int = self.get_sig_fig()
-        _cf: float = utils.get_correction_factor(self.bbox_ratio_mean)
-
-        if self.oyster_sizes:
-            mean_size: float = mean(self.oyster_sizes) * _cf if _cf > 1.0 else self.oyster_sizes[0]
-            if self.entry['size_std_val'].get() == '1':
-                mean_oyster_size = str(int(mean_size))
-            else:
-                mean_oyster_size = (f'{to_p.to_precision(value=mean_size, precision=_sf)};'
-                                    f' {_sf} sig figs')
-        else:
-            mean_oyster_size = 'n/a'
-
         display_metrics = (
             f'Image: {self.input_file_name}\n'
             f'Counted: {len(self.oyster_sizes)}\n'
-            f'Avg Size: {mean_oyster_size}\n'
+            f'Avg Size: {self.size_to_display}\n'
         )
 
         longest_line: str = max(display_metrics.split('\n'), key=len)
@@ -834,6 +822,14 @@ class ViewImage(ProcessImage):
 
         else:  # standards found, but no oysters found.
             mean_oyster_size = median_oyster_txt = size_range = 'n/a'
+
+        # Generate size text for display_metrics_in_image(). If the size
+        #  standard value is '1', then display oyster size as pixels, as above.
+        self.size_to_display = (
+            f'{mean_oyster_size}; ({sig_fig} sig. fig.)'
+            if self.entry['size_std_val'].get() != '1'
+            else f'{mean_oyster_size} px'
+        )
 
         # Text is formatted for clarity in window, terminal, and saved file.
         # Divider symbol is Box Drawings Double Horizontal from https://coolsymbol.com/
