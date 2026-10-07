@@ -518,10 +518,10 @@ class ViewImage(ProcessImage):
         # Flag from display_processing_info() if standards' sizes are non-concordant.
         # Note: keep mean as string for proper SF evaluation in get_sig_fig().
         std_sizes = self.get_standard_sizes()
-        self.standards_mean_px_size: str = float(to_p.to_precision(
+        self.standards_mean_px_size = to_p.to_precision(
             value=std_sizes.mean(),
             precision=utils.count_sig_fig(std_sizes.min())
-        ))
+        )
 
         # Get the entered standard size value and calculate the mean size.
         # Note: standards_mean_measured_size is used only for reporting and
@@ -563,14 +563,14 @@ class ViewImage(ProcessImage):
         """
 
         x1, y1, x2, y2 = xywh2xyxy(bbox)
-        longest_box_side = float(bbox[2:].max()) # max of width and height, pixels.
+        longest_box_side = bbox[2:].max()  # max of width and height, pixels.
         calculated_size: float = longest_box_side * self.unit_per_px
 
         # Need to apply sig. fig. for sizes in annotated image and report.
         display_size: str = to_p.to_precision(value=calculated_size,
                                               precision=self.get_sig_fig())
 
-        if self.entry['size_std_val'] == '1':
+        if self.entry['size_std_val'].get() == '1':
             display_size = f'{longest_box_side}px'
 
         return x1, y1, x2, y2, display_size
@@ -765,8 +765,8 @@ class ViewImage(ProcessImage):
         """
 
         size_std_dia = ('1, sizes are in pixels'
-                        if self.entry['size_std_val'] == '1'
-                        else self.entry['size_std_val']
+                        if self.entry['size_std_val'].get() == '1'
+                        else self.entry['size_std_val'].get()
                         )
         num_std_objects = len(self.true_pos_standards)
         num_oysters = len(self.true_pos_oysters)
