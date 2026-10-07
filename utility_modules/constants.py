@@ -3,17 +3,17 @@ Constants used throughout main script and modules:
 MY_OS
 MODEL_NAME
 PREDICT_IMGSZ
-PREDICT_CONF
 PREDICT_IOU
 PREDICT_MAX_DET
-PREDICT_HALF
-PREDICT_AUGMENT
 EDGE_PROXIMITY
+BOX_RATIO_THRESHOLD
+correction_factors
 TIME_STAMP_FORMAT
 TIME_PRINT_FORMAT
 STUB_ARRAY
 FONT_SCALE_FACTOR
 LINE_THICKNESS_FACTOR
+ALPHA
 COLORS_CV
 COLORS_TK
 FONT_TYPE
@@ -32,12 +32,11 @@ WIDGET_FG
 LABEL_PARAMETERS
 SCALE_PARAMETERS
 WINDOW_PARAMETERS
-COMBO_PARAMETERS
 PANEL_LEFT
 PANEL_RIGHT
 WINDOW_TITLES
 """
-# Copyright (C) 2024 C.S. Echt, under MIT License
+# Copyright (C) 2024-2026 C.S. Echt, under GNU General Public License'
 
 # Standard library import
 from sys import platform
@@ -169,13 +168,14 @@ COLORS_TK = {
 #   cv::FONT_HERSHEY_SCRIPT_COMPLEX = 7,
 #   cv::FONT_ITALIC = 16
 # }
+# Font type is used for annotating images.
 FONT_TYPE = cv2.FONT_HERSHEY_SIMPLEX
 
 OS_SETTINGS = {
     'lin': {
-        'os_font': 'DejaVu Sans',
-        'os_mono_font': 'DejaVu Sans Mono',
-        'widget_font_size': (8,),
+        'os_font': 'Ubuntu',
+        'os_mono_font': 'Ubuntu Monospace',
+        'widget_font_size': (9,),
         'report_font_size': (9,),
         'menu_font_size': (9,),
         'tips_font_size': (8,),

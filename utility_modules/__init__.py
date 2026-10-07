@@ -4,13 +4,13 @@ These dunders and constants are used with the --about command line argument.
 
 # Development status standards: https://pypi.org/classifiers/
 __author__ = 'Craig S. Echt'
-__version__: str = '0.0.14'
+__version__: str = '0.0.15'
 __status__ = 'Development Status :: 3 - Alpha'
-__copyright__ = 'Copyright (C) 2025 C.S. Echt, under MIT License'
+__copyright__ = 'Copyright (C) 2026 C.S. Echt, under MIT License'
 __license__ = """
 MIT License
 
-Copyright (c) 2025 C.S. Echt
+Copyright (c) 2026 C.S. Echt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,10 +1,12 @@
-ultralytics==8.3.38
+ultralytics
 
-# last known good version: 8.3.38 (2024-12-02) running Python 3.12 and pip 24.3.1
-#  Later versions will through mystifying errors. If you encounter such errors, revert to this version.
+# ultralytics==8.4.137, includes YOLO, as of October 2026.
+# Included packages, as required for oystersize.py import:
+# pytorch                    2.10.0
+# numpy                      2.5.3
+# opencv                     4.13.0
 
-# ^^As used for development on Ubuntu 22.04 running Python 3.10, windows11 running Python11, macOS running Python12
-# With a compatible Python version, the ultralytics package installs all necessary dependencies when none are present.
-#  Therefore it is recommended to make a fresh virtural environment and simply install ultralytics, i.e.:
-#  pip install ultralytics
-#  ultralytics installs (in the venv) these requirements: numpy, cv2, packaging, PIL, torch, plus other dependencies.
+# It is recommended to make a fresh virtural environment with Anaconda or condamini
+#  and simply install ultralytics, i.e.conda install ultralytics
+#  The ultralytics package will install these requirements:
+#  numpy, cv2, packaging, PIL, torch, plus other dependencies.

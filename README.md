@@ -20,31 +20,36 @@ The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyste
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
 
 ### Requirements:
-Python 3.9 - 3.12, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports, and are included with an `ultralytics` installation using `pip`. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
+Python 3.9 - 3.11, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports and are included with an `ultralytics` package installation using. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
 
-Program development environments were Linux Ubuntu 22.04 (Python 3.10), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
+Program development environments were Linux Ubuntu 22.04 (Python 3.9-3.11), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
 
 As with all repository downloads, it is best practice to install required packages into a Python virtual environment. This avoids undesired changes in your system's Python library and ensures having all compatible dependencies. To use `oystersize.py`, the recommended way to set up a clean environment, one which has all required packages and dependencies, is with these commands:
+Installation of a `venv` environment and installing packages with `pip` may not work.
 
-Create a venv directory in the current folder (use whatever directory name you like):
+As presented on https://www.anaconda.com/docs/getting-started/installation
+Download the Anaconda installation script, `miniconda` in this example:
 
-    `python3 -m venv oystersize_venv`
+`curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh`
 
-Activate this new virtual environment:
+Install the conda package by running the downloaded bash script and follow the prompts:
 
-    `source oystersize_venv/bin/activate` (Linux and macOS)
-    `oystersize_venv\Scripts\activate` (Windows)
+`bash ~/Miniconda3-latest-Linux-x86_64.sh`
 
-Install the `ultralytics` package in the currently active virtual environment (need latest versions of `pip` and `ultralytics`):
+Follow the prompts, then:
+`source ~/.bashrc`
 
-    `python3 -m pip install --upgrade pip` 
-    `python3 -m pip install ultralytics`
+Activate the virtual environment with: 
+`conda activate`
 
-Installing the `ultralytics` package installs all needed program imports and NVIDIA tools to use a CUDA compatible GPU. If you don't have a CUDA GPU, the program will still run fine. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
+From the resulting (base) terminal prompt, install the Ultralytics package:
+`conda install ultralytics`
+
+Installing the Ultralytics package installs all Python packages needed program imports. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
 
 Now, whenever you want to use `oystersize.py`, just activate this virtual environment, change directory to your downloaded repository directory, and run it as described below in Usage.
 
-Deactivate a virtual environment with the command `deactivate`, or just close the terminal window.
+Deactivate the virtual environment with the command `conda deactivate`, or just close the terminal window.
 
 ### Usage:
 
@@ -92,7 +97,7 @@ If several identical size standard disks are placed at various positions across 
 ### Tips:
 * For best results, use a high-resolution image with reasonably contrasted  background. Oysters and standards should not be piled up. Touching and slightly overlapping oysters are fine, but should not overlap any standard. The shot should be straight down, not at an angle. Training of the YOLO model for oyster detection was mainly with images in a 4 x 3 aspect ratio (4032 × 3024 pixels), so images with similar aspect and resolution should give best results.
 * The most accurate sizing is when one size standard is placed near the center of the image and another somewhere in a corner quadrant. Standards should be close to the sizes of the oysters being measured.
-* Size standards should have a pixel diameter at least 4% and greater than 15% of the image width or height. Smaller or larger standards may not be detected, even after adjusting the confidence level.
+* Size standards should have a pixel diameter at least 4% of the image width or height. Smaller standards may not be detected, even after adjusting the confidence level.
 * The maximum number of detected objects is 400. If more are detected, the program will display a warning and only the first 400 will be analysed.
 * Generally, more detected oysters lead to more accurate results, but it is not necessary to detect every single oyster to obtain usable population metrics. Camera distance, cropping, and standards placement can affect detection and size estimates, so experiment with these variables to find what works best for your setup.
 * A summary of results is inset in the top left corner of the "Sized Objects" image. It will toggle off when changing annotation Styles, but can be toggled on with the Ctrl-I key (Command-I on macOS) or from the View pull-down menu.
@@ -101,12 +106,10 @@ If several identical size standard disks are placed at various positions across 
 ### Known Issues:
 Sizing is based on the longest side of an object's bounding box. When more mature (oblong) oysters are oriented on the diagonal, assuming random orientation in the sample, 'longest side' size estimates will be underestimated for the sample population. To compensate, the program calculates a correction factor, based on mean ratio of box dimensions, to provide corrected mean and median estimates to within 4% of actual. A better solution is being sought, perhaps by using a rotated bounding box model.
 
-Currently, for a size standard disk to be detected, it's relative size should be greater than ~4% and less than ~15% of the image's height or width.
-
 For macOS, if an expected window does not appear, or the startup appears stalled, you may just need to click the Python Launcher icon in the Dock to make windows visible. This is a known issue with tkinter on macOS. See: https://www.python.org/download/mac/tcltk/
 
 ### Attributions
-The yolov11_ultralytics object detection package is from:
+The yolov8_ultralytics object detection package is from:
 
 Glenn Jocher and Jing Qiu, 2024, Ultralytics YOLO11,
 https://github.com/ultralytics/ultralytics, orcid 0000-0001-5950-6979, 0000-0002-7603-6750, 0000-0003-3783-7069, license AGPL-3.0.
@@ -116,7 +119,6 @@ https://github.com/BebeSparkelSparkel/to-precision/releases/tag/0.0.0
 It was edited to match this project's coding style.
 
 All photo images are from the author, C.S. Echt.
-Image and labels datasets used for training and validation were uploaded to HuggingFace https://huggingface.co/csecht/aquaculture_oysters/tree/main on 15 February 2025. Synthetic disk training images in that dataset were created with the Python repository at: https://github.com/csecht/synthesize-disks.
 
 ### Example size standards.
 Enter the millimeter diameter value in the Size standard entry field. The standard's size is then used to convert pixels to millimeters for all objects in the image. Sizes are reported using appropriate significant figures, as limited by the entered standard's significant figures or the pixel size of the standard, whichever is less. 

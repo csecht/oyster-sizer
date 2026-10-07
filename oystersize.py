@@ -5,7 +5,7 @@ aquaculture production. With the user interacting through a tkinter GUI,
 the program detects and classifies oysters and size standard objects in
 an image. Once the size standard's known radius is entered, oyster sizes,
 mean, median, and range are reported, along with an annotated image.
-Results can be saved to file. Detection is based on a YOLOv8n model from
+Results can be saved to file. Detection is based on a YOLO11n model from
 Ultralytics using transfer learning. The oyster sizing model was trained
 on two custom classes: oyster images at various stages of growth, and
 real and synthetic disk-like images as size standards.
@@ -14,9 +14,9 @@ Quit the program with Esc key, Ctrl-Q key, the close window icon of the
 report window or File menubar. From the command line, use Ctrl-C.
 See "Requirements" and "Usage" in the README.md file for more information.
 
-Developed using Python 3.9 through 3.12.7.
+Developed using Python 3.9 through 3.13.
 """
-# Copyright (C) 2024 C.S. Echt, under GNU General Public License
+# Copyright (C) 2024-2026 C.S. Echt, under GNU General Public License
 # No warranty. Use at your own risk.
 
 # Standard library imports.
@@ -30,6 +30,8 @@ from typing import Union, List, Tuple
 # Third party imports.
 # tkinter(Tk/Tcl) is included with most Python3 distributions,
 # but may sometimes need to be regarded as third-party.
+# NOTE: all imports are available from an Anaconda installation of the
+# ultralytics package.
 try:
     import cv2
     import numpy as np
@@ -129,7 +131,6 @@ class ProcessImage(tk.Tk):
         # Use a copy of input image to avoid overwriting the original.
         #  The original is displayed as the 'sized' image when no obj are found.
         # Use 'cpu' device for onnx model. cpu also works well for pytorch and coreml.
-        # half=True does not work for onnx model or on macOS and is slower for pt model.
         results =  model.predict(
             source=self.cvimg['input'].copy(),
             imgsz=const.PREDICT_IMGSZ,
@@ -137,7 +138,7 @@ class ProcessImage(tk.Tk):
             device='cpu',
             iou=const.PREDICT_IOU,
             max_det=const.PREDICT_MAX_DET,
-            half=False,
+            quantize=8,
             augment=False,
             verbose=False,
         )
@@ -297,7 +298,7 @@ class ViewImage(ProcessImage):
             self.slider['confidence'].configure(state=tk.DISABLED)
 
             # Grab the current slider values, in case user tries to change.
-            self.slider_val_saved = self.confidence_slide_val.get()
+            self.slider_val_saved = str(self.confidence_slide_val.get())
             for _, _w in self.button.items():
                 _w.grid_remove()
                 self.show_info_message(info='\nProcessing...\n\n', color='black')
@@ -309,7 +310,7 @@ class ViewImage(ProcessImage):
             self.slider['confidence'].configure(state=tk.NORMAL)
 
             # Restore the slider values to overwrite any changes.
-            self.confidence_slide_val.set(self.slider_val_saved)
+            self.confidence_slide_val.set(int(self.slider_val_saved))
             for _, _w in self.button.items():
                 _w.grid()
             for _, _w in self.entry.items():
@@ -517,10 +518,10 @@ class ViewImage(ProcessImage):
         # Flag from display_processing_info() if standards' sizes are non-concordant.
         # Note: keep mean as string for proper SF evaluation in get_sig_fig().
         std_sizes = self.get_standard_sizes()
-        self.standards_mean_px_size: str = to_p.to_precision(
+        self.standards_mean_px_size: str = float(to_p.to_precision(
             value=std_sizes.mean(),
             precision=utils.count_sig_fig(std_sizes.min())
-        )
+        ))
 
         # Get the entered standard size value and calculate the mean size.
         # Note: standards_mean_measured_size is used only for reporting and
@@ -562,14 +563,14 @@ class ViewImage(ProcessImage):
         """
 
         x1, y1, x2, y2 = xywh2xyxy(bbox)
-        longest_box_side = bbox[2:].max()  # max of width and height, pixels.
+        longest_box_side = float(bbox[2:].max()) # max of width and height, pixels.
         calculated_size: float = longest_box_side * self.unit_per_px
 
         # Need to apply sig. fig. for sizes in annotated image and report.
         display_size: str = to_p.to_precision(value=calculated_size,
                                               precision=self.get_sig_fig())
 
-        if self.entry['size_std_val'].get() == '1':
+        if self.entry['size_std_val'] == '1':
             display_size = f'{longest_box_side}px'
 
         return x1, y1, x2, y2, display_size
@@ -764,8 +765,8 @@ class ViewImage(ProcessImage):
         """
 
         size_std_dia = ('1, sizes are in pixels'
-                        if self.entry['size_std_val'].get() == '1'
-                        else self.entry['size_std_val'].get()
+                        if self.entry['size_std_val'] == '1'
+                        else self.entry['size_std_val']
                         )
         num_std_objects = len(self.true_pos_standards)
         num_oysters = len(self.true_pos_oysters)
@@ -890,14 +891,14 @@ class ViewImage(ProcessImage):
                 'Increasing Confidence level may improve results.\n\n',
                 "vermilion")),
             (self.first_run, (
-                f'Initial processing time elapsed: {self.elapsed}\n'
-                'Identified size standard have a purple box.\n'
+                f'Initial detection time elapsed: {self.elapsed}\n'
+                'Size standard has a purple box.\n'
                 'Adjust Confidence level if any oysters have a purple box.\n',
                 "black")),
             (not self.first_run, (
                 'Object detections completed.\n'
                 f'{self.elapsed} processing seconds elapsed.\n'
-                'Identified size standard have a purple box.\n'
+                'Size standard has a purple box.\n'
                 'Adjust Confidence level if any oysters have a purple box.\n',
                 "blue")),
         )
@@ -1001,7 +1002,7 @@ class SetupApp(ViewImage):
         self.menubar = tk.Menu()
         self.menu_labels: tuple = ()
 
-    def call_cmd(self) -> '_Command':
+    def call_cmd(self):
         """
         Groups methods that are shared by buttons, menus, and
         key bind commands in a nested Class.
@@ -1091,7 +1092,7 @@ class SetupApp(ViewImage):
                 Returns: None
                 """
 
-                if self.open_input(parent=self.master):
+                if self.open_input(parent=self):
                     self.set_auto_scale_factor()
                     self.update_image(img_name='input')
                 else:  # User canceled input selection or closed messagebox window.
@@ -1534,7 +1535,7 @@ class SetupApp(ViewImage):
 
         # Width should fit any text expected without causing WINDOW shifting.
         self.info_label.config(font=const.TIPS_FONT,
-                               width=50,  # width should fit any text expected without
+                               width=60,
                                justify='right',
                                bg=const.MASTER_BG,  # use 'pink' for development
                                fg='black')
@@ -1809,7 +1810,7 @@ def run_checks() -> None:
     """
     utils.check_platform()
     vcheck.minversion('3.10')
-    vcheck.maxversion('3.12')
+    vcheck.maxversion('3.13')
     manage.arguments()
 
 
