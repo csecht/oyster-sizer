@@ -20,9 +20,9 @@ The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyste
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
 
 ### Requirements:
-Python 3.9 - 3.11, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports and are included with an `ultralytics` package installation using. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
+Python 3.13.16, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports and are included with an `ultralytics` package installation using. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
 
-Program development environments were Linux Ubuntu 22.04 (Python 3.9-3.11), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
+Program development environments were Linux Ubuntu 22.04 (Python 3.9-3.13), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
 
 As with all repository downloads, it is best practice to install required packages into a Python virtual environment. This avoids undesired changes in your system's Python library and ensures having all compatible dependencies. To use `oystersize.py`, the recommended way to set up a clean environment, one which has all required packages and dependencies, is with these commands:
 Installation of a `venv` environment and installing packages with `pip` may not work.
