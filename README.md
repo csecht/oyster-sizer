@@ -46,8 +46,9 @@ From the resulting (base) terminal prompt, install the Ultralytics package:
 `conda install ultralytics`
 
 Installing the Ultralytics package installs all Python packages needed program imports. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
-In an anaconda/miniconda environment, tkinter fonts are not anti-aliased. You may be able to improve font styling by entering the following to that environment.
-(Source - https://stackoverflow.com/a/79835032 Posted by Amnon Harel, Retrieved 2026-10-10, License - CC BY-SA 4.0)
+
+In an anaconda/miniconda environment, tkinter fonts are not anti-aliased. You may be able to improve font styling by installing the following to that environment.
+This has only been tested, within the context of this repository, on Ubuntu 26.04 with Python 3.14 and 3.13. (Source - https://stackoverflow.com/a/79835032 Posted by Amnon Harel, Retrieved 2026-10-10, License - CC BY-SA 4.0)
 
 `conda install -c conda-forge tk=*=xft_*`
 
