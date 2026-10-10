@@ -1,6 +1,7 @@
 """
 Constants used throughout main script and modules:
 MY_OS
+PROGRAM_NAME
 MODEL_NAME
 PREDICT_IMGSZ
 PREDICT_IOU
@@ -46,6 +47,7 @@ import cv2
 import numpy as np
 
 MY_OS: str = platform[:3]  # 'lin', 'win', or 'dar'
+PROGRAM_NAME: str = 'oyster-sizer'
 
 # The YOLO model and Ultralytics prediction() function arguments.
 # Model oyster_yolo11_tuned (a.k.a. oyster_tune233_125e_20b) is the best as of 8 Feb, 2025.

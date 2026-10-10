@@ -61,6 +61,7 @@ from utility_modules import (vcheck,
 
 from utility_modules.constants import (
     MY_OS,
+    PROGRAM_NAME,
     MODEL_NAME,
     PREDICT_IMGSZ,
     PREDICT_IOU,
@@ -82,9 +83,6 @@ from utility_modules.constants import (
     PANEL_LEFT,
     WINDOW_TITLES,
 )
-
-PROGRAM_NAME = utils.program_name()
-
 
 class ProcessImage(tk.Tk):
     """
