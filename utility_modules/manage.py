@@ -7,7 +7,7 @@ scale: manages the specified scale factor for display of images.
 tk_image: converts scaled cv2 image to a compatible tk.TK image format.
 ttk_styles: configures platform-specific ttk.Style for Buttons and Comboboxes.
 """
-# Copyright (C) 2024 C.S. Echt, under MIT License
+# Copyright (C) 2024-2026 C.S. Echt, under MIT License
 
 # Standard library imports.
 import argparse
@@ -23,7 +23,13 @@ from PIL.ImageTk import PhotoImage
 
 # Local application imports.
 import utility_modules
-from utility_modules import constants as const
+from utility_modules.constants import (
+    MY_OS,
+    BUTTON_FONT_SIZE, 
+    LINE_THICKNESS_FACTOR,
+    FONT_SCALE_FACTOR,
+    COLORS_TK
+)
 
 def arguments() -> dict:
     """
@@ -82,11 +88,11 @@ def input_metrics(img: np.ndarray) -> dict:
     # h, w, _ = img.shape # or img.shape[1::-1] -> (width, height)
     img_avg_dimension: int = round((img.shape[0] + img.shape[1]) / 2)
 
-    line_thickness: int = max(round(img_avg_dimension * const.LINE_THICKNESS_FACTOR), 1)
+    line_thickness: int = max(round(img_avg_dimension * LINE_THICKNESS_FACTOR), 1)
 
     # Ideas for scaling: https://stackoverflow.com/questions/52846474/
     #   how-to-resize-text-for-cv2-puttext-according-to-the-image-object_size-in-opencv-python
-    font_scale: float = round(max(img_avg_dimension * const.FONT_SCALE_FACTOR, 0.33), 2)
+    font_scale: float = round(max(img_avg_dimension * FONT_SCALE_FACTOR, 0.33), 2)
 
     metrics = {
         'line_thickness': line_thickness,
@@ -155,33 +161,23 @@ def ttk_styles(mainloop: tk.Tk) -> None:
     bstyle = ttk.Style()
     combo_style = ttk.Style()
 
-    if const.MY_OS == 'lin':
-        font_size = 8
-    elif const.MY_OS == 'win':
-        font_size = 7
-    else:  # is macOS
-        font_size = 9
+    bstyle.configure("My.TButton", font=('TkTooltipFont', BUTTON_FONT_SIZE))
+    mainloop.option_add("*TCombobox*Font", ('TkTooltipFont', BUTTON_FONT_SIZE))
 
-    bstyle.configure("My.TButton", font=('TkTooltipFont', font_size))
-    mainloop.option_add("*TCombobox*Font", ('TkTooltipFont', font_size))
-
-    if const.MY_OS == 'lin':
+    if MY_OS == 'lin':
         bstyle.map("My.TButton",
-                   foreground=[('active', const.COLORS_TK['yellow'])],
+                   foreground=[('active', COLORS_TK['yellow'])],
                    background=[('pressed', 'gray30'),
-                               ('active', const.COLORS_TK['vermilion'])],
+                               ('active', COLORS_TK['vermilion'])],
                    )
         combo_style.map('TCombobox',
-                        fieldbackground=[('readonly',
-                                          const.COLORS_TK['dark blue'])],
-                        selectbackground=[('readonly',
-                                           const.COLORS_TK['dark blue'])],
-                        selectforeround=[('readonly',
-                                          const.COLORS_TK['yellow'])],
+                        fieldbackground=[('readonly', COLORS_TK['dark blue'])],
+                        selectbackground=[('readonly', COLORS_TK['dark blue'])],
+                        selectforeround=[('readonly', COLORS_TK['yellow'])],
                         )
-    elif const.MY_OS == 'win':
+    elif MY_OS == 'win':
         bstyle.map("My.TButton",
-                   foreground=[('active', const.COLORS_TK['yellow'])],
+                   foreground=[('active', COLORS_TK['yellow'])],
                    background=[('pressed', 'gray30'),
-                               ('active', const.COLORS_TK['vermilion'])],
+                               ('active', COLORS_TK['vermilion'])],
                    )

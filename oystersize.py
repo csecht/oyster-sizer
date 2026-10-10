@@ -47,20 +47,6 @@ except (ImportError, ModuleNotFoundError) as import_err:
         '*** One or more required Python packages were not found'
         ' or need an update:\n'
         'OpenCV-Python, NumPy, tkinter (Tk/Tcl), PyTorch, Ultralytics.\n'
-        # 'To install: from the current folder, run this command'
-        # ' for the Python package installer (PIP):\n'
-        # '   python3 -m pip install -r requirements.txt\n'
-        # 'Alternative command formats (system dependent):\n'
-        # '   py -m pip install -r requirements.txt (Windows)\n'
-        # '   pip install -r requirements.txt\n'
-        # 'You may also install directly using, for example, this command,'
-        # ' for the Python package installer (PIP):\n'
-        # '   python3 -m pip install ultralytics\n'
-        # 'On Linux, if tkinter is the problem, then you may need:\n'
-        # '   sudo apt-get install python3-tk\n'
-        # 'See also: https://numpy.org/install/\n'
-        # '  https://tkdocs.com/tutorial/install.html\n'
-        # '  https://docs.opencv2.org/4.6.0/d5/de5/tutorial_py_setup_in_windows.html\n'
         'Consider running this app and installing missing packages in an\n'
         'Anaconda (miniconda) virtual environment to ensure compatibilities. \n'
         'See: https://www.anaconda.com/docs/getting-started/installation'
@@ -71,10 +57,32 @@ except (ImportError, ModuleNotFoundError) as import_err:
 from utility_modules import (vcheck,
                              utils,
                              manage,
-                             constants as const,
                              to_precision as to_p)
 
-MY_OS = const.MY_OS
+from utility_modules.constants import (
+    MY_OS,
+    MODEL_NAME,
+    PREDICT_IMGSZ,
+    PREDICT_IOU,
+    PREDICT_MAX_DET,
+    EDGE_PROXIMITY,
+    STUB_ARRAY,
+    ALPHA,
+    COLORS_CV,
+    COLORS_TK,
+    FONT_TYPE,
+    C_BIND,
+    MENU_FONT,
+    TIPS_FONT,
+    MASTER_BG,
+    DARK_BG,
+    LABEL_PARAMETERS,
+    SCALE_PARAMETERS,
+    WINDOW_PARAMETERS,
+    PANEL_LEFT,
+    WINDOW_TITLES,
+)
+
 PROGRAM_NAME = utils.program_name()
 
 
@@ -94,9 +102,9 @@ class ProcessImage(tk.Tk):
         #  The cvimg images are numpy arrays.
         self.tkimg: dict = {}
         self.cvimg: dict = {}
-        for _name in const.WINDOW_TITLES:
+        for _name in WINDOW_TITLES:
             self.tkimg[_name] = tk.PhotoImage()
-            self.cvimg[_name] = const.STUB_ARRAY
+            self.cvimg[_name] = STUB_ARRAY
 
         # Note: The matching selector widgets for the following
         #  control variables are in ViewImage __init__.
@@ -115,7 +123,7 @@ class ProcessImage(tk.Tk):
         #  The pytorch best.pt model is quite fast using a CPU for prediction.
         #   While the ONNX best.onnx model is faster, the perceived difference is
         #   not noticeable in most cases.
-        model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.pt")
+        model_to_use = utils.valid_path_to(f"models/{MODEL_NAME}/weights/best.pt")
         # model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.onnx")
         # model_to_use = utils.valid_path_to(f"models/{const.MODEL_NAME}/weights/best.mlpackage")
 
@@ -135,11 +143,11 @@ class ProcessImage(tk.Tk):
         # Use 'cpu' device for onnx model. cpu also works well for pytorch and coreml.
         results =  model.predict(
             source=self.cvimg['input'].copy(),
-            imgsz=const.PREDICT_IMGSZ,
+            imgsz=PREDICT_IMGSZ,
             conf=confidence,
             device='cpu',
-            iou=const.PREDICT_IOU,
-            max_det=const.PREDICT_MAX_DET,
+            iou=PREDICT_IOU,
+            max_det=PREDICT_MAX_DET,
             quantize=8,
             augment=False,
             verbose=False,
@@ -274,13 +282,13 @@ class ViewImage(ProcessImage):
         Args:
             info: The text string of the message to display.
             color: The font color string, either as a key in the
-                   const.COLORS_TK dictionary or as a Tk compatible fg
+                   COLORS_TK dictionary or as a Tk compatible fg
                    color string, i.e. hex code or X11 named color.
 
         Returns: None
         """
         self.info_txt.set(info)
-        self.info_label.config(fg=const.COLORS_TK.get(color, color))
+        self.info_label.config(fg=COLORS_TK.get(color, color))
 
     def widget_control(self, action: str) -> None:
         """
@@ -371,10 +379,10 @@ class ViewImage(ProcessImage):
 
         # Set limits for coordinate points to identify boxes that
         # are within a few pixels of an image file border (edge).
-        return not (x1 <= const.EDGE_PROXIMITY
-                    or y1 <= const.EDGE_PROXIMITY
-                    or x2 >= self.input_w - const.EDGE_PROXIMITY
-                    or y2 >= self.input_ht - const.EDGE_PROXIMITY)
+        return not (x1 <= EDGE_PROXIMITY
+                    or y1 <= EDGE_PROXIMITY
+                    or x2 >= self.input_w - EDGE_PROXIMITY
+                    or y2 >= self.input_ht - EDGE_PROXIMITY)
 
     def find_interior_objects(self) -> None:
         """
@@ -592,7 +600,7 @@ class ViewImage(ProcessImage):
 
         ((txt_width, _), baseline) = cv2.getTextSize(
             text=txt_string,
-            fontFace=const.FONT_TYPE,
+            fontFace=FONT_TYPE,
             fontScale=self.font_scale,
             thickness=self.line_thickness)
         offset_x = txt_width / 2
@@ -618,9 +626,9 @@ class ViewImage(ProcessImage):
         Returns: None
         """
 
-        color_selection: tuple = const.COLORS_CV.get(self.color_val.get(), 'green')
+        color_selection: tuple = COLORS_CV.get(self.color_val.get(), 'green')
         if object_name == 'standard':
-            color_selection = const.COLORS_CV['DarkOrchid1']
+            color_selection = COLORS_CV['DarkOrchid1']
 
         # Use  'Cv' for oyster annotation instead of its measured size.
         # if object_name == 'oyster':
@@ -651,7 +659,7 @@ class ViewImage(ProcessImage):
                     text=object_size,
                     org=(round(center_x - offset_x),
                          round(center_y + offset_y)),
-                    fontFace=const.FONT_TYPE,
+                    fontFace=FONT_TYPE,
                     fontScale=self.font_scale,
                     color=text_contrast,
                     thickness=self.line_thickness,
@@ -728,13 +736,13 @@ class ViewImage(ProcessImage):
         cv2.rectangle(img=overlay,
                       pt1=(5, 5),
                       pt2=(textbox_px_width, img_height // ht_coefficient),
-                      color=const.COLORS_CV['white'],
+                      color=COLORS_CV['white'],
                       thickness=cv2.FILLED,
         )
         cv2.addWeighted(src1=overlay,
-                        alpha=const.ALPHA,
+                        alpha=ALPHA,
                         src2=self.cvimg['sized'].copy(),  # another copy, to avoid overwriting.
-                        beta=1 - const.ALPHA,
+                        beta=1 - ALPHA,
                         gamma=0.0,
                         dst=self.cvimg['sized']
         )
@@ -746,9 +754,9 @@ class ViewImage(ProcessImage):
             cv2.putText(img=self.cvimg['sized'],
                         org=(10, round(_y)),  # add 5 to the x indent of cv2.rectangle pt1.
                         text=line,
-                        fontFace=const.FONT_TYPE,
+                        fontFace=FONT_TYPE,
                         fontScale=self.font_scale,
-                        color=const.COLORS_CV['black'],
+                        color=COLORS_CV['black'],
                         thickness=self.line_thickness,
                         lineType=cv2.LINE_AA,
             )
@@ -878,8 +886,8 @@ class ViewImage(ProcessImage):
                 'Sizing results may be inaccurate.\n'
                 'Consider adjusting the Confidence level.\n',
                 "vermilion")),
-            (len(self.predicted_boxes) >= const.PREDICT_MAX_DET, (
-                f'DETECTION LIMIT of {const.PREDICT_MAX_DET} WAS MET.\n'
+            (len(self.predicted_boxes) >= PREDICT_MAX_DET, (
+                f'DETECTION LIMIT of {PREDICT_MAX_DET} WAS MET.\n'
                 'Valid objects may have been excluded.\n'
                 'Sizing results may be inaccurate.\n'
                 'Consider increasing the Confidence level.',
@@ -1019,7 +1027,7 @@ class SetupApp(ViewImage):
         # Inner class concept adapted from:
         # https://stackoverflow.com/questions/719705/
         #   what-is-the-purpose-of-pythons-inner-classes/722175
-        cv_colors = list(const.COLORS_CV.keys())
+        cv_colors = list(COLORS_CV.keys())
 
         def _display_annotation_action(action: str, value: str):
             self.show_info_message(
@@ -1040,7 +1048,7 @@ class SetupApp(ViewImage):
                 f'A new scale factor of {_sf} was applied.\n\n',
                 color='black')
 
-            for _title in const.WINDOW_TITLES:
+            for _title in WINDOW_TITLES:
                 self.update_image(img_name=_title)
 
 
@@ -1138,7 +1146,7 @@ class SetupApp(ViewImage):
 
             @staticmethod
             def next_font_color() -> None:
-                """Go to the next color key in const.COLORS_CV.keys."""
+                """Go to the next color key in COLORS_CV.keys."""
                 current_color: str = self.color_val.get()
                 current_index = cv_colors.index(current_color)
                 # Wraps around the list to the first color.
@@ -1151,7 +1159,7 @@ class SetupApp(ViewImage):
 
             @staticmethod
             def preceding_font_color() -> None:
-                """Go to the prior color key in const.COLORS_CV.keys."""
+                """Go to the prior color key in COLORS_CV.keys."""
                 current_color: str = self.color_val.get()
                 current_index = cv_colors.index(current_color)
                 # Wraps around the list to the last color.
@@ -1259,7 +1267,7 @@ class SetupApp(ViewImage):
             tearoff=0,
             takefocus=False,
             type='menubar',
-            font=const.MENU_FONT,
+            font=MENU_FONT,
         )
 
         # Note: menu_labels is also used in bind_focus_actions().
@@ -1328,7 +1336,7 @@ class SetupApp(ViewImage):
             "• More Tips are in the repository's README file.",
         )
         for _line in tip_text:
-            tips.add_command(label=_line, font=const.TIPS_FONT)
+            tips.add_command(label=_line, font=TIPS_FONT)
 
         menu['Help'].add_command(label='About',
                                  command=utils.about_window)
@@ -1484,8 +1492,8 @@ class SetupApp(ViewImage):
         # Allow image label panels in image windows to resize with window.
         #  Note that images don't proportionally resize, just their boundaries;
         #  images will remain anchored at their top left corners.
-        self.tkimg_window = {_t: tk.Toplevel() for _t in const.WINDOW_TITLES}
-        self.img_label = {_t: tk.Label(self.tkimg_window[_t]) for _t in const.WINDOW_TITLES}
+        self.tkimg_window = {_t: tk.Toplevel() for _t in WINDOW_TITLES}
+        self.img_label = {_t: tk.Label(self.tkimg_window[_t]) for _t in WINDOW_TITLES}
         for _title, _toplevel in self.tkimg_window.items():
             utils.set_icon(_toplevel)
             _toplevel.wm_minsize(width=200, height=100)
@@ -1494,8 +1502,8 @@ class SetupApp(ViewImage):
             _toplevel.columnconfigure(index=0, weight=1)
             _toplevel.columnconfigure(index=1, weight=1)
             _toplevel.rowconfigure(index=0, weight=1)
-            _toplevel.title(const.WINDOW_TITLES[_title])
-            _toplevel.config(**const.WINDOW_PARAMETERS)
+            _toplevel.title(WINDOW_TITLES[_title])
+            _toplevel.config(**WINDOW_PARAMETERS)
             self.update_image(img_name=_title)
             if _title == 'sized':
                 _toplevel.withdraw()
@@ -1507,15 +1515,15 @@ class SetupApp(ViewImage):
         Called from start_now().
         """
 
-        self.config(**const.WINDOW_PARAMETERS)
-        self.config(bg=const.MASTER_BG)
+        self.config(**WINDOW_PARAMETERS)
+        self.config(bg=MASTER_BG)
         self.config(menu=self.menubar)
 
         # Default Frame() arguments work fine to display report text.
         # bg won't show when grid sticky EW for tk.Text; see utils.display_report().
         self.selectors_frame.configure(relief='raised',
-                                       bg=const.DARK_BG,
-                                       # bg=const.COLORS_TK['sky blue'],  # for development
+                                       bg=DARK_BG,
+                                       # bg=COLORS_TK['sky blue'],  # for development
                                        borderwidth=5)
 
         self.columnconfigure(index=0, weight=1)
@@ -1536,10 +1544,10 @@ class SetupApp(ViewImage):
                                   sticky=tk.EW)
 
         # Width should fit any text expected without causing WINDOW shifting.
-        self.info_label.config(font=const.TIPS_FONT,
+        self.info_label.config(font=TIPS_FONT,
                                width=60,
                                justify='right',
-                               bg=const.MASTER_BG,  # use 'pink' for development
+                               bg=MASTER_BG,  # use 'pink' for development
                                fg='black')
 
     def configure_buttons(self) -> None:
@@ -1587,9 +1595,9 @@ class SetupApp(ViewImage):
 
         self.entry['size_entry'].config(textvariable=self.entry['size_std_val'], width=8)
         self.entry['size_std_lbl'].config(text="Enter standard's diameter:",
-                                          **const.LABEL_PARAMETERS)
+                                          **LABEL_PARAMETERS)
         self.entry['size_std_lbl2'].config(text="Entry of 1 provides pixel sizes.",
-                                           **const.LABEL_PARAMETERS)
+                                           **LABEL_PARAMETERS)
 
         self.entry['size_entry'].bind('<Return>', _check_and_process)
         self.entry['size_entry'].bind('<KP_Enter>', _check_and_process)
@@ -1609,13 +1617,13 @@ class SetupApp(ViewImage):
         scale_len = int(self.screen_width * 0.20)
 
         self.slider['confidence_lbl'].configure(text='Confidence level, %:\n',
-                                                **const.LABEL_PARAMETERS,
+                                                **LABEL_PARAMETERS,
                                                 )
         self.slider['confidence'].configure(from_=50, to=100,
                                             tickinterval=5,
                                             length=scale_len,
                                             variable=self.confidence_slide_val,
-                                            **const.SCALE_PARAMETERS,
+                                            **SCALE_PARAMETERS,
                                             )
         # To avoid processing all the intermediate values between normal
         #  slider movements, bind slider to call function only on
@@ -1666,10 +1674,10 @@ class SetupApp(ViewImage):
         # Note: macOS Command-q will quit program without utils.quit_gui info msg.
         # Need os-specific control key bindings for macOS and Windows/Linux.
         event_function = {
-            f'<{f"{const.C_BIND}"}-u>': self.process_prediction,
-            f'<{f"{const.C_BIND}"}-s>': self.call_cmd().save_results,
-            f'<{f"{const.C_BIND}"}-n>': self.call_cmd().new_input,
-            f'<{f"{const.C_BIND}"}-i>': self.display_metrics_in_image,
+            f'<{f"{C_BIND}"}-u>': self.process_prediction,
+            f'<{f"{C_BIND}"}-s>': self.call_cmd().save_results,
+            f'<{f"{C_BIND}"}-n>': self.call_cmd().new_input,
+            f'<{f"{C_BIND}"}-i>': self.display_metrics_in_image,
             '<Control-equal>': self.call_cmd().increase_font_size,
             '<Control-minus>': self.call_cmd().decrease_font_size,
             '<Control-KP_Subtract>': self.call_cmd().decrease_font_size,
@@ -1778,7 +1786,7 @@ class SetupApp(ViewImage):
         """
 
         for lbl in self.img_label:
-            self.img_label[lbl].grid(**const.PANEL_LEFT)
+            self.img_label[lbl].grid(**PANEL_LEFT)
 
     def display_images(self) -> None:
         """

@@ -171,6 +171,13 @@ COLORS_TK = {
 # Font type is used for annotating images.
 FONT_TYPE = cv2.FONT_HERSHEY_SIMPLEX
 
+if MY_OS == 'lin':
+    BUTTON_FONT_SIZE = 8
+elif MY_OS == 'win':
+    BUTTON_FONT_SIZE = 7
+else:  # is macOS
+    BUTTON_FONT_SIZE = 9
+
 OS_SETTINGS = {
     'lin': {
         'os_font': 'Ubuntu',
