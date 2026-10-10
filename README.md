@@ -20,15 +20,41 @@ The Python program oystersize.py analyzes triploid _Crassostrea virginica_ oyste
 The program can be executed from the command line on Linux, Windows, and macOS platforms.
 
 ### Requirements:
-Python 3.13.16, with the Ultralytics package to run YOLO models. The packages OpenCV-Python, NumPy, and torch are used as imports and are included with an `ultralytics` package installation using. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
+Program development environments were Linux Ubuntu 22.04 - 26.04 (Python 3.9-3.14), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7).
 
-Program development environments were Linux Ubuntu 22.04 (Python 3.9-3.13), Windows 11 (Python 3.11), macOS 13.2 (Python 3.9), and macOS 15.0 (Python 3.12.7). As of 8 November 2024, when installed as described here, the ultralytics package installation is not compatible with Python 3.13.
+The packages OpenCV-Python, NumPy, and PyTorch are used as imports and are included with an `ultralytics` package installation using. Tkinter (Tk/Tcl) is also needed, but is most likely already included in your Python distribution. To avoid problems with version dependencies, please consider setting up a new virtual environment as described below. 
+
+Installing the Ultralytics package installs all Python packages used. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
 
 As with all repository downloads, it is best practice to install required packages into a Python virtual environment. This avoids undesired changes in your system's Python library and ensures having all compatible dependencies. To use `oystersize.py`, the recommended way to set up a clean environment, one which has all required packages and dependencies, is with these commands:
-Installation of a `venv` environment and installing packages with `pip` may not work.
 
-As presented on https://www.anaconda.com/docs/getting-started/installation
-Download the Anaconda installation script, `miniconda` in this example:
+#### Installation of a `venv` environment:
+
+Create a venv directory in the current folder (use whatever directory name you like):
+
+    `python3 -m venv oystersize_venv`
+
+Activate this new virtual environment:
+
+    `source oystersize_venv/bin/activate` (Linux and macOS)
+    `oystersize_venv\Scripts\activate` (Windows)
+
+First, use pip to install PyTorch. The link will install only those component to run YOLO on the CPU. Running on the GPU is not necessary.
+
+    `python3 -m pip install --upgrade pip` 
+    
+    `python3 -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu`
+
+Then install the `ultralytics` package in the currently active virtual environment.
+Installing the `ultralytics` package installs all needed Python imports to run the script. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
+
+    `python3 -m pip install ultralytics`
+
+#### Installation with an Anaconda virtual environment
+
+source: https://www.anaconda.com/docs/getting-started/installation
+
+Download the Anaconda installation script, using `miniconda` in this example:
 
 `curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh`
 
@@ -45,16 +71,14 @@ Activate the virtual environment with:
 From the resulting (base) terminal prompt, install the Ultralytics package:
 `conda install ultralytics`
 
-Installing the Ultralytics package installs all Python packages needed program imports. If you already have the these packages installed in some other Python environment, do not assume it will have compatible versions for ultralytics. Building a virtual environment from scratch guarantees compatibility.
-
-In an anaconda/miniconda environment, tkinter fonts are not anti-aliased. You may be able to improve font styling by installing the following to that environment.
+In an anaconda/miniconda environment, tkinter fonts are not anti-aliased. If you want to improve GUI font styling, run the conda install command below.
 This has only been tested, within the context of this repository, on Ubuntu 26.04 with Python 3.14 and 3.13. (Source - https://stackoverflow.com/a/79835032 Posted by Amnon Harel, Retrieved 2026-10-10, License - CC BY-SA 4.0)
 
 `conda install -c conda-forge tk=*=xft_*`
 
-Now, whenever you want to use `oystersize.py`, just activate this virtual environment, change directory to your downloaded repository directory, and run it as described below in Usage.
+Now, whenever you want to use `oystersize.py`, just activate your virtual environment, change directory to your downloaded repository directory, and run it as described below in Usage.
 
-Deactivate the virtual environment with the command `conda deactivate`, or just close the terminal window.
+Deactivate the virtual environment with the command `deactivate` or `conda deactivate`, or just close the terminal window.
 
 ### Usage:
 
